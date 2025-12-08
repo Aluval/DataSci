@@ -1,0 +1,9 @@
+Flask
+gunicorn
+pandas
+numpy
+scikit-learn
+plotly
+reportlab
+pyrebase4
+firebase-admin
