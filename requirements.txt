@@ -2,8 +2,9 @@ Flask
 gunicorn
 
 # Firebase
-pyrebase
+pyrebase4
 firebase-admin
+pycryptodome
 
 # Data / ML
 pandas
@@ -14,5 +15,4 @@ reportlab
 
 # Fix missing pkg_resources
 setuptools
-
 python-dotenv
