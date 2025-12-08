@@ -157,6 +157,7 @@ Thumbs.db
 
 # Firebase
 firebase_config.py
+firebase_config.json
 firebase-debug.log
 .firebase/
 
