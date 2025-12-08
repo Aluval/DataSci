@@ -34,18 +34,27 @@ app.secret_key = os.environ.get("FLASK_SECRET", os.urandom(24))
 
 FILE_STORE = {}
 
-# ---------------- Firebase ----------------
+
+
+# ---------------- Firebase Web Config (SAFE) ----------------
+firebase_config_env = os.getenv("FIREBASE_WEB_CONFIG")
+firebaseConfig = json.loads(firebase_config_env) if firebase_config_env else {}
+
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
 
+# ---------------- Firebase Admin (SAFE) ----------------
+firebase_admin_json = os.getenv("FIREBASE_ADMIN_JSON")
 
-
-firebase_json = os.environ.get("FIREBASE_ADMIN_JSON")
-
-if firebase_json:
-    cred = credentials.Certificate(json.loads(firebase_json))
-    firebase_admin.initialize_app(cred)
-    db = firestore.client()
+if firebase_admin_json:
+    try:
+        admin_dict = json.loads(firebase_admin_json)
+        cred = credentials.Certificate(admin_dict)
+        firebase_admin.initialize_app(cred)
+        db = firestore.client()
+    except Exception as e:
+        print("Firebase admin init error:", e)
+        db = None
 else:
     db = None
 # ---------------- Helpers ----------------
@@ -549,4 +558,5 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
+
 
