@@ -1,10 +1,18 @@
-Flask
+flask
 gunicorn
+
+# Firebase
+pyrebase4
+Pyrebase4
+firebase-admin
+
+# Data/ML
 pandas
 numpy
 scikit-learn
 plotly
 reportlab
-pyrebase4
-firebase-admin
+
+# Fix missing pkg_resources
 setuptools
+
