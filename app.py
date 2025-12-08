@@ -2,6 +2,7 @@
 import os
 import io
 import uuid
+import json
 import base64
 from functools import wraps
 from flask import (Flask, render_template, request, redirect, url_for,
@@ -29,7 +30,7 @@ import firebase_admin
 
 # ---------------- Flask app ----------------
 app = Flask(__name__)
-app.secret_key = os.environ.get('FLASK_SECRET', 'datasci-secret-change-me')
+app.secret_key = os.environ.get("FLASK_SECRET", os.urandom(24))
 
 FILE_STORE = {}
 
@@ -37,17 +38,16 @@ FILE_STORE = {}
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
 
-cred_path = os.environ.get('FIREBASE_ADMIN_CRED', 'firebase_config.json')
-if os.path.exists(cred_path):
-    try:
-        cred = credentials.Certificate(cred_path)
-        firebase_admin.initialize_app(cred)
-        db = firestore.client()
-    except Exception:
-        db = None
+
+
+firebase_json = os.environ.get("FIREBASE_ADMIN_JSON")
+
+if firebase_json:
+    cred = credentials.Certificate(json.loads(firebase_json))
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
 else:
     db = None
-
 # ---------------- Helpers ----------------
 def safe_read_csv(text):
     encodings = ['utf-8', 'latin1', 'cp1252']
@@ -549,3 +549,4 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
+
