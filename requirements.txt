@@ -2,7 +2,7 @@ flask
 gunicorn
 
 # Firebase
-Pyrebase4
+pyrebase4
 firebase-admin
 
 # Data/ML
