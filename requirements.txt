@@ -1,11 +1,11 @@
-flask
+Flask
 gunicorn
 
 # Firebase
 pyrebase4
 firebase-admin
 
-# Data/ML
+# Data / ML
 pandas
 numpy
 scikit-learn
@@ -15,3 +15,4 @@ reportlab
 # Fix missing pkg_resources
 setuptools
 
+python-dotenv
