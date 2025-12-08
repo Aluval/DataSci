@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h3 class="mb-3">Visualize</h3>
+
+<div class="card p-3 mb-3 shadow-sm">
+    <form method="post">
+        <div class="row g-3 align-items-end">
+
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Chart Type</label>
+                <select name="plot_type" class="form-select">
+                    <option value="scatter">Scatter</option>
+                    <option value="line">Line</option>
+                    <option value="bar">Bar</option>
+                    <option value="histogram">Histogram</option>
+                    <option value="heatmap">Heatmap</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label fw-bold">X-Axis</label>
+                <select name="x_col" class="form-select">
+                    <option value="">Choose X column</option>
+                    {% for c in columns %}
+                        <option value="{{ c }}">{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Y-Axis</label>
+                <select name="y_col" class="form-select">
+                    <option value="">Choose Y column</option>
+                    {% for c in columns %}
+                        <option value="{{ c }}">{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- PLOT + PRINT BUTTONS (SIDE BY SIDE) -->
+            <div class="col-md-3 d-flex gap-2">
+
+                <!-- PLOT Button -->
+                <button type="submit" class="btn btn-primary w-50">
+                    Plot
+                </button>
+
+                <!-- PRINT PDF Button -->
+                {% if plot_html %}
+                    <a href="{{ url_for('visualize_print') }}" class="btn btn-primary w-50">
+                        Print PDF
+                    </a>
+                {% else %}
+                    <button class="btn btn-secondary w-50" disabled>
+                        Print PDF
+                    </button>
+                {% endif %}
+
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<!-- Chart Box -->
+<div class="card p-3 shadow-sm">
+    <h5 class="fw-bold">Chart</h5>
+    <div class="mt-2">
+        {% if plot_html %}
+            {{ plot_html | safe }}
+        {% else %}
+            <p class="text-muted">No chart yet. Choose columns and plot.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Preview -->
+<div class="card p-3 mt-3 shadow-sm">
+    <h5 class="fw-bold">Preview</h5>
+    <div>{{ preview_html | safe }}</div>
+</div>
+
+{% endblock %}

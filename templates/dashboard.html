@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Dashboard Overview</h3>
+<div class="row mb-3">
+  {% for k in kpis %}
+  <div class="col-md-2 mb-3">
+    <div class="kpi-card" style="background: {{ k.color }}">
+      <div class="small">{{ k.name }}</div>
+      <div style="font-size:1.4rem;font-weight:700">{{ k.value }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="row">
+  <div class="col-md-7">
+    <div class="card p-3 mb-3">
+      <h5>Trend</h5>
+      <div>{% if trend_plot %}{{ trend_plot | safe }}{% else %}<p>No trend available</p>{% endif %}</div>
+    </div>
+    <div class="card p-3">
+      <h5>Preview</h5>
+      <div>{{ table_html | safe }}</div>
+    </div>
+  </div>
+
+  <div class="col-md-5">
+    <div class="card p-3 mb-3">
+      <h5>Distribution</h5>
+      <div>{% if donut_plot %}{{ donut_plot | safe }}{% else %}<p>No distribution</p>{% endif %}</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
