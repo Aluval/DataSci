@@ -27,6 +27,8 @@ import pyrebase
 from firebase_config import firebaseConfig
 from firebase_admin import credentials, firestore
 import firebase_admin
+from dotenv import load_dotenv
+load_dotenv()
 
 # ---------------- Flask app ----------------
 app = Flask(__name__)
@@ -558,5 +560,6 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
+
 
 
