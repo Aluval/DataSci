@@ -7,3 +7,4 @@ plotly
 reportlab
 pyrebase4
 firebase-admin
+setuptools
