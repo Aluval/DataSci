@@ -1,84 +1,110 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
 {% block content %}
 
-<h3 class="mb-3">Visualize</h3>
+<div class="container mt-4 mb-5">
 
-<div class="card p-3 mb-3 shadow-sm">
-    <form method="post">
-        <div class="row g-3 align-items-end">
+    <h2 class="fw-bold text-primary text-center mb-4">Data Visualization</h2>
 
-            <div class="col-md-3">
-                <label class="form-label fw-bold">Chart Type</label>
-                <select name="plot_type" class="form-select">
-                    <option value="scatter">Scatter</option>
-                    <option value="line">Line</option>
-                    <option value="bar">Bar</option>
+    <div class="card shadow p-4 mb-4" style="border-radius: 12px;">
+        <h5 class="fw-semibold text-primary mb-3">Select Columns & Chart Type</h5>
+
+        <form method="POST" class="row g-3">
+
+            <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">X-Axis Column</label>
+                <select class="form-select" name="x_col" required>
+                    <option value="">Choose...</option>
+                    {% for col in columns %}
+                    <option value="{{ col }}">{{ col }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Y-Axis Column</label>
+                <select class="form-select" name="y_col">
+                    <option value="">Choose...</option>
+                    {% for col in columns %}
+                    <option value="{{ col }}">{{ col }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12"> <label class="form-label fw-semibold">Chart Type</label>
+                <select class="form-select" name="plot_type" required>
+                    <option value="scatter">Scatter Plot</option>
+                    <option value="line">Line Chart</option>
+                    <option value="bar">Bar Chart</option>
                     <option value="histogram">Histogram</option>
                     <option value="heatmap">Heatmap</option>
                 </select>
             </div>
 
-            <div class="col-md-3">
-                <label class="form-label fw-bold">X-Axis</label>
-                <select name="x_col" class="form-select">
-                    <option value="">Choose X column</option>
-                    {% for c in columns %}
-                        <option value="{{ c }}">{{ c }}</option>
-                    {% endfor %}
-                </select>
+            <div class="col-12 mt-2">
+                <button class="btn btn-primary w-100 fw-semibold">Generate Plot</button>
             </div>
 
-            <div class="col-md-3">
-                <label class="form-label fw-bold">Y-Axis</label>
-                <select name="y_col" class="form-select">
-                    <option value="">Choose Y column</option>
-                    {% for c in columns %}
-                        <option value="{{ c }}">{{ c }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+        </form>
+    </div>
 
-            <!-- PLOT + PRINT BUTTONS (SIDE BY SIDE) -->
-            <div class="col-md-3 d-flex gap-2">
+    <div class="row">
 
-                <!-- PLOT Button -->
-                <button type="submit" class="btn btn-primary w-50">
-                    Plot
-                </button>
+        <div class="col-12 col-lg-8 mb-4">
+            <div class="card shadow p-3" style="border-radius: 12px;">
 
-                <!-- PRINT PDF Button -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="fw-semibold text-primary mb-3">Visualization Output</h5>
+                    </div>
+
                 {% if plot_html %}
-                    <a href="{{ url_for('visualize_print') }}" class="btn btn-primary w-50">
-                        Print PDF
-                    </a>
+                <div class="chart-container text-center">
+                    {{ plot_html | safe }}
+                </div>
                 {% else %}
-                    <button class="btn btn-secondary w-50" disabled>
-                        Print PDF
-                    </button>
+                <p class="text-muted mb-0">No chart generated yet.</p>
                 {% endif %}
 
+                {% if plot_html %}
+                <div class="d-flex justify-content-center mt-3"></div>
+                    <a href="{{ url_for('visualize_print') }}"
+                       class="btn btn-primary fw-semibold px-4 py-2"
+                       style="border-radius: 8px;">
+                        📄 Print PDF
+                    </a>
+                </div>
+                {% endif %}
             </div>
-
         </div>
-    </form>
-</div>
 
-<!-- Chart Box -->
-<div class="card p-3 shadow-sm">
-    <h5 class="fw-bold">Chart</h5>
-    <div class="mt-2">
-        {% if plot_html %}
-            {{ plot_html | safe }}
-        {% else %}
-            <p class="text-muted">No chart yet. Choose columns and plot.</p>
-        {% endif %}
+        <div class="col-12 col-lg-4 mb-4">
+            <div class="card shadow p-3" style="border-radius: 12px;">
+                <h5 class="fw-semibold text-primary mb-3">Data Preview</h5>
+
+                <div class="table-responsive">
+                    {{ preview_html | safe }}
+                </div>
+
+                </div>
+        </div>
+
     </div>
+
 </div>
 
-<!-- Preview -->
-<div class="card p-3 mt-3 shadow-sm">
-    <h5 class="fw-bold">Preview</h5>
-    <div>{{ preview_html | safe }}</div>
-</div>
+<style>
+.chart-container iframe {
+    width: 100% !important;
+    max-width: 100%;
+    height: 350px !important;
+}
+
+/* Mobile View */
+@media (max-width: 768px) {
+    .chart-container iframe {
+        height: 260px !important;
+    }
+}
+</style>
 
 {% endblock %}
