@@ -1,19 +1,22 @@
-Flask
-gunicorn
+Flask==3.0.2
+gunicorn==21.2.0
 
-# Firebase
-pyrebase4
-firebase-admin
-pycryptodome
+pandas==2.2.1
+numpy==1.26.4
 
-# Data / ML
-pandas
-numpy
-scikit-learn
-reportlab
+scikit-learn==1.4.1.post1
 plotly==5.17.0
 kaleido==0.2.1
 
+reportlab==4.0.9
+# Firebase
+pyrebase4==4.7.1
+firebase-admin==6.4.0
+
+pycryptodome
+requests==2.31.0
+
 # Fix missing pkg_resources
 setuptools
-python-dotenv
+python-dotenv==1.0.1
+
