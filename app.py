@@ -31,19 +31,18 @@ import firebase_admin
 from dotenv import load_dotenv
 import plotly.io as pio
 
+import plotly.io as pio
 
+# Enable static image export using Kaleido
+pio.kaleido.enabled = True
 
-# Enable Kaleido (required for PNG export on Render)
-pio.io.kaleido.enabled = True
-
-# Global PNG export settings
+# Set export defaults
 pio.defaults.width = 900
 pio.defaults.height = 600
 pio.defaults.scale = 1
 
-# Chromium path used by Render
-pio.defaults.chromium_path = "/usr/bin/chromium"
-
+# Chromium path for Render (Render has Chromium installed)
+pio.kaleido.scope.chromium_path = "/usr/bin/chromium"
 
 load_dotenv()
 
@@ -739,5 +738,6 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
+
 
 
