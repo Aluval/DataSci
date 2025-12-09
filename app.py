@@ -31,6 +31,18 @@ import firebase_admin
 from dotenv import load_dotenv
 import plotly.io as pio
 
+
+# Force Chromium path for Kaleido (Render)
+os.environ["PATH"] += os.pathsep + "/usr/bin"
+os.environ["CHROME_BIN"] = "/usr/bin/chromium-browser"
+os.environ["GOOGLE_CHROME_BIN"] = "/usr/bin/chromium-browser"
+os.environ["CHROMIUM_PATH"] = "/usr/bin/chromium-browser"
+os.environ["KALIEDO_BROWSER"] = "/usr/bin/chromium-browser"
+
+
+# Force Kaleido to use this chromium
+pio.kaleido.scope.chromium_path = "/usr/bin/chromium-browser"
+pio.kaleido.scope.mathjax = None  # reduces errors
 # -------------- Plotly/Kaleido defaults --------------
 # these help produce consistent images when calling pio.to_image
 pio.kaleido.scope.default_format = "png"
@@ -732,3 +744,4 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
+
