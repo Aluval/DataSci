@@ -33,17 +33,11 @@ import plotly.io as pio
 
 import plotly.io as pio
 
-# Enable static image export using Kaleido
-pio.kaleido.enabled = True
 
-# Set export defaults
-pio.defaults.width = 900
-pio.defaults.height = 600
-pio.defaults.scale = 1
-
-# Chromium path for Render (Render has Chromium installed)
-pio.kaleido.scope.chromium_path = "/usr/bin/chromium"
-
+pio.kaleido.scope.default_format = "png"
+pio.kaleido.scope.default_width = 900
+pio.kaleido.scope.default_height = 600
+pio.kaleido.scope.default_scale = 1
 load_dotenv()
 
 # ---------------- Flask app ----------------
@@ -738,6 +732,7 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
+
 
 
 
