@@ -216,37 +216,44 @@ def register():
 
         try:
             user = auth.create_user_with_email_and_password(email, password)
+
+            # Save in Firestore
             if db:
                 db.collection('users').document(user['localId']).set({
-                    'fullName': fullName, 'email': email, 'mobile': mobile
+                    'fullName': fullName,
+                    'email': email,
+                    'mobile': mobile
                 })
+
             flash("Account created successfully — please login.", "success")
             return redirect(url_for('login'))
+
         except Exception as e:
             flash(f"Registration failed: {e}", "danger")
             return redirect(url_for('register'))
-    return render_template('register.html')
 
+    return render_template('register.html')
+  
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        agree = request.form.get('agree')
-
-        if not agree:
-            flash("Please agree to the Terms & Privacy Policy to continue.", "warning")
-            return redirect(url_for('login'))
 
         try:
             user = auth.sign_in_with_email_and_password(email, password)
+
+            # Store session info
             session['user'] = email
-            session['user_id'] = user.get('localId')
-            flash("Logged in.", "success")
+            session['user_id'] = user['localId']
+
+            flash("Logged in successfully.", "success")
             return redirect(url_for('upload'))
+        
         except Exception as e:
-            flash(f"Login failed: {e}", "danger")
+            flash("Login failed: Invalid email or password", "danger")
             return redirect(url_for('login'))
+
     return render_template('login.html')
 
 @app.route('/logout')
@@ -709,35 +716,60 @@ def download_predicted():
     return send_file(io.BytesIO(csv_text.encode()), mimetype="text/csv", as_attachment=True, download_name="predicted.csv")
 
 # Profile page (if Firestore available)
-@app.route('/profile', methods=['GET','POST'])
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    # If Firebase Admin (db) is NOT configured, show basic profile only
     if not db:
-        user = {"fullName": "", "email": session.get("user",""), "mobile": ""}
-        if request.method == 'POST':
+        user = {
+            "fullName": "",
+            "email": session.get("user", ""),
+            "mobile": ""
+        }
+
+        if request.method == "POST":
             flash("Profile storage not configured.", "warning")
             return redirect(url_for('profile'))
-        return render_template('profile.html', user=user)
-    user_id = session.get('user_id')
+
+        return render_template("profile.html", user=user)
+
+    # Firebase Admin is available → load Firestore user profile
+    user_id = session.get("user_id")
     if not user_id:
-        flash("User ID missing", "warning")
+        flash("User ID missing. Please login again.", "warning")
         return redirect(url_for('login'))
-    doc_ref = db.collection('users').document(user_id)
+
+    # Fetch user document from Firestore
+    doc_ref = db.collection("users").document(user_id)
     doc = doc_ref.get()
-    user = doc.to_dict() if doc.exists else {"fullName":"","email":session.get("user",""),"mobile":""}
-    if request.method == 'POST':
-        fullName = request.form.get('fullName')
-        mobile = request.form.get('mobile')
+
+    user = doc.to_dict() if doc.exists else {
+        "fullName": "",
+        "email": session.get("user", ""),
+        "mobile": ""
+    }
+
+    # Update profile
+    if request.method == "POST":
+        fullName = request.form.get("fullName")
+        mobile = request.form.get("mobile")
+
         try:
-            doc_ref.update({'fullName': fullName, 'mobile': mobile})
-            flash("Profile updated.", "success")
+            doc_ref.update({
+                "fullName": fullName,
+                "mobile": mobile
+            })
+
+            flash("Profile updated successfully.", "success")
             return redirect(url_for('profile'))
+
         except Exception as e:
             flash(f"Update failed: {e}", "danger")
             return redirect(url_for('profile'))
-    return render_template('profile.html', user=user)
 
+    return render_template("profile.html", user=user)
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
+
 
