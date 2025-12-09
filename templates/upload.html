@@ -1,14 +1,39 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-8">
-    <div class="card p-4">
-      <h3>Upload Your CSV File</h3>
-      <form method="post" enctype="multipart/form-data">
-        <div class="mb-3"><label>Select CSV</label><input class="form-control" type="file" name="file" accept=".csv" required></div>
-        <button class="btn btn-primary">Upload & Continue</button>
-      </form>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-lg p-4" style="border-radius: 12px;">
+
+                <h3 class="text-center mb-3 fw-bold text-primary">Upload CSV File</h3>
+                <p class="text-center text-muted">Upload your dataset to continue to dashboard</p>
+
+                <form method="POST" enctype="multipart/form-data">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Choose CSV File</label>
+                        <input 
+                            type="file" 
+                            name="file" 
+                            accept=".csv" 
+                            class="form-control p-3" 
+                            required>
+                    </div>
+
+                    <button class="btn btn-primary w-100 mt-2 p-2 fw-semibold">
+                        Upload
+                    </button>
+                </form>
+
+                <hr class="my-4">
+
+            </div>
+        </div>
+
     </div>
-  </div>
 </div>
+
 {% endblock %}
