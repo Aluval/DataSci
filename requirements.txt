@@ -12,6 +12,7 @@ numpy
 scikit-learn
 plotly
 reportlab
+kaleido
 
 # Fix missing pkg_resources
 setuptools
