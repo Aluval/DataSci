@@ -1,39 +1,38 @@
-
 ⚡ DataSci — AI Powered Data Analysis Platform
 
-> A complete, production-ready AI & Machine Learning platform for automated data visualization, prediction, and PDF reporting.
+> A complete, production-ready AI & ML platform for automated data visualization, prediction, and PDF reporting.
 Developed by Aluvala Ediga Harsha Vardhan Goud (MCA)
 
 
 
 <p align="center">
-  <img src="https://envs.sh/yourbanner" height="260" alt="DataSci Banner">
-</p><p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&center=true&width=600&lines=🤖+AI+Powered+Data+Analysis+Platform;📊+Auto+Visualization+%7C+Auto+Prediction;📝+PDF+Reports+%7C+Firebase+Authentication;🚀+Developed+by+Harsha+Vardhan+Goud">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&pause=1200&color=00A2FF&center=true&vCenter=true&width=600&lines=⚡+DataSci+Platform;🤖+AI+Powered+Data+Analysis;📊+Auto+Visualization+%7C+Auto+Prediction;📝+PDF+Reporting+System;🔐+Firebase+Auth+%7C+Cloud+Deployment" />
+</p>
+---
+
+<p align="center">
+  <img src="https://github.com/Aluval/DataSci/raw/main/assets/ai_data.gif" height="240" />
 </p>
 ---
 
 🌟 What is DataSci?
 
-DataSci is a smart data-analysis web platform that allows anyone to upload a CSV and instantly get:
+DataSci is an intelligent AI-based data analysis system that enables anyone to upload a CSV file and instantly receive:
 
-Cleaned & analyzed data
+✔ Cleaned and analyzed data
+✔ Automated visualizations
+✔ Machine learning predictions
+✔ Accuracy / R² score evaluation
+✔ Printable PDF reports
+✔ Firebase-secured user profiles
 
-Automatic interactive charts
-
-Machine learning predictions
-
-Accuracy / R² score metrics
-
-Printable PDF reports
-
-User profiles stored in Firebase
+All inside a polished, cloud-hosted web UI.
 
 
-All inside a clean, cloud-hosted web UI.
+---
 
 <p align="center">
-  <img src="https://envs.sh/sample_dashboard" height="250" alt="Dashboard Preview">
+  <img src="https://github.com/Aluval/DataSci/raw/main/assets/data_viz.gif" height="240" />
 </p>
 ---
 
@@ -41,11 +40,11 @@ All inside a clean, cloud-hosted web UI.
 
 🔐 Secure User System (Firebase Auth + Firestore)
 
-Email/password login & register
+Email/password authentication
 
-Firestore-based profile management
+Firestore profile storage
 
-Cloud-safe session handling
+Cloud-safe session management
 
 
 
@@ -55,11 +54,11 @@ Cloud-safe session handling
 
 Auto-detect encoding
 
-Auto-clean missing values
+Auto-fix missing values
 
-Auto-convert numbers
+Auto-convert numeric fields
 
-Preview table
+Preview first 20 rows
 
 
 
@@ -67,109 +66,82 @@ Preview table
 
 📊 Auto Visualizations (Plotly)
 
-Supports:
+📌 Supported Charts:
 
-Plot Type	Description
+Plot Type	Purpose
 
-Scatter	Compare numerical columns
-Line	Time-series or trend analysis
-Bar	Category comparisons
-Histogram	Distribution analysis
+Scatter	Compare numeric values
+Line	Trend analysis
+Bar	Category comparison
+Histogram	Distribution
 Heatmap	Correlation matrix
 
 
-All charts use Plotly Interactive Mode + Kaleido downloads.
-
-
+<p align="center">
+  <img src="https://github.com/Aluval/DataSci/raw/main/assets/plot_anim.gif" height="220" />
+</p>
 ---
 
 🤖 Machine Learning Engine
 
-Supports full ML pipeline:
+Supports end-to-end ML pipeline:
 
-Model Type	Algorithms Included
+📌 Regression
 
-Regression	Linear, Decision Tree, RandomForest, KNN, SVR
-Classification	Logistic, Decision Tree, RandomForest, KNN, SVM
-Clustering	KMeans (3 & 5 clusters)
+Linear Regression, Decision Tree, Random Forest, KNN, SVR
 
+📌 Classification
 
-Features:
+Logistic Regression, Decision Tree, Random Forest, KNN, SVM
 
-Train/Test split
+📌 Clustering
 
-StandardScaler normalization
+KMeans (3 clusters), KMeans (5 clusters)
 
-Label Encoding
+Features included:
+Train/Test split • StandardScaler normalization • Label encoding • Auto prediction column
 
-Accuracy / R² score metrics
-
-Predictions added directly into the dataset
-
-
-
+<p align="center">
+  <img src="https://github.com/Aluval/DataSci/raw/main/assets/ml_anim.gif" height="230" />
+</p>
 ---
 
-📝 Professional PDF Reports (ReportLab)
+***📝 Professional PDF Reports (ReportLab)
 
-Exports:
+Includes:
 
 Visualization report
 
 Prediction report
 
-Branded header + footer
+Branded header & footer
 
-Tables
+Embedded PNG charts
 
-Charts converted to PNG
+Clean table formatting
 
 
-<p align="center">
-  <img src="https://envs.sh/sample_pdf" height="260" alt="PDF Report">
-</p>
 ---
 
 🏗 Tech Stack
 
-Frontend
+Frontend:
+HTML5 • CSS • Bootstrap • Jinja2 • Plotly.js
 
-HTML5, CSS, Bootstrap
+Backend:
+Python 3.11 • Flask • Pandas • NumPy • Scikit-Learn • ReportLab
 
-Jinja2 Templates
-
-Plotly.js
-
-
-Backend
-
-Python 3.11
-
-Flask
-
-Pandas, NumPy
-
-Scikit-Learn
-
-ReportLab
-
-
-Cloud & Database
-
-Firebase Auth
-
-Firestore
-
-Render Deployment
-
+Cloud:
+Firebase Auth • Firestore • Render Deployment
 
 
 ---
 
-📦 Environment Variables (Click to Expand)
+⚙️ Environment Variables
 
+`
 <details>
-<summary>Show FIREBASE & App Variables</summary>{
+<summary><strong>Click to Expand</strong></summary>{
   "FIREBASE_WEB_CONFIG": "{...}",
   "FIREBASE_ADMIN_JSON": "{...}",
   "FLASK_SECRET": "your-secret-key",
@@ -177,63 +149,47 @@ Render Deployment
 }
 
 </details>
----
-
-🖼 Screenshots
-
-Add your images after uploading to GitHub:
-
-![Dashboard](screenshots/dashboard.png)
-![Visualization](screenshots/visualization.png)
-![Prediction](screenshots/prediction.png)
-![PDF Report](screenshots/report.png)
-
-
+`
 ---
 
 📌 Recruiter / HR Highlights
 
-Why this project is valuable:
-
-⭐ End-to-End Real AI System
-
-Not a toy project — a full production pipeline.
-
-⭐ Full-Stack + AI + Cloud Skills
-
-You demonstrate:
-
-Python backend engineering
-
-Data science
-
-ML model deployment
-
-Frontend UI design
-
-Cloud hosting
-
-Firebase integrations
+⭐ Industry-Ready Architecture — Firebase + Render + Python ML
+⭐ Full-Stack + AI Skillset — Backend, ML, Auth, UI, PDF
+⭐ Real-Time Predictions — Accuracy & R² metrics
+⭐ Professional Reporting — Auto-generated branded PDFs
 
 
-⭐ Professional Reporting
+---
 
-PDF generation is enterprise-level feature.
+###⚠️ Performance Note (Render Free Tier)
 
-⭐ Scalable Architecture
+> 🧠 The prediction process may temporarily pause or restart if processing large datasets.
+This is due to Render’s 512 MB RAM limit on the free plan.
 
-Session management
-Firestore integration
-Render cloud hosting
+
+
+Heavy ML models (RandomForest, SVM, KMeans) use more memory.
+
+For smoother performance, use smaller CSVs or upgrade to a paid Render plan.
+
+App restarts are normal under high load — not a bug.
+
+
+✅ All backend functions are fully optimized; only cloud limits cause temporary slowdown.
 
 
 ---
 
 🚀 Live Demo
 
-🔗 Add your live Render link here
+🔗 Add your Render link here after publishing:
 
-https://datasci-yourapp.onrender.com
+<p align="center">
+  <a href="https://datasci-sv3k.onrender.com" target="_blank">
+    <img src="https://img.shields.io/badge/Open DataSci App-141414?style=for-the-badge&logo=python&logoColor=white" />
+  </a>
+</p>
 
 
 ---
@@ -241,17 +197,16 @@ https://datasci-yourapp.onrender.com
 🧑‍💻 Developer
 
 Aluvala Ediga Harsha Vardhan Goud
-🎓 MCA
-💡 AI & ML Developer | Full-Stack Engineer
-🔗 GitHub: https://github.com/Aluval
-🔗 LinkedIn: (add your link)
+🎓 MCA — AI & ML Developer
+[![GitHub](https://img.shields.io/badge/GitHub-Aluval-black?style=for-the-badge&logo=github)](https://github.com/Aluval)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/aluvala-ediga-harsha-vardhan-goud-83241a296)
 
 
 ---
 
-🛠 Installation (Local Setup)
+🛠 Installation (Local)
 
-git clone https://github.com/your-username/DataSci.git
+git clone https://github.com/Aluval/DataSci.git
 cd DataSci
 pip install -r requirements.txt
 python app.py
@@ -261,13 +216,16 @@ python app.py
 
 📄 License
 
-This project is open for learning.
+MIT License
 Do not sell commercially without permission.
 
 
 ---
 
-❤️ Support the Project
+⭐ Support the Project
 
-If you like this project, give it a ⭐ on GitHub!
+If you found this project useful —
+📌 Star this repo on GitHub!
+❤️ Helps recruiters & companies discover it faster.
+
 
