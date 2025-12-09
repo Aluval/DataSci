@@ -8,12 +8,12 @@ Developed by Aluvala Ediga Harsha Vardhan Goud (MCA)
 <p align="center">
   <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&pause=1200&color=00A2FF&center=true&vCenter=true&width=600&lines=⚡+DataSci+Platform;🤖+AI+Powered+Data+Analysis;📊+Auto+Visualization+%7C+Auto+Prediction;📝+PDF+Reporting+System;🔐+Firebase+Auth+%7C+Cloud+Deployment" />
 </p>
----
+
 
 <p align="center">
   <img src="https://github.com/Aluval/DataSci/raw/main/assets/ai_data.gif" height="240" />
 </p>
----
+
 
 🌟 What is DataSci?
 
@@ -29,12 +29,11 @@ DataSci is an intelligent AI-based data analysis system that enables anyone to u
 All inside a polished, cloud-hosted web UI.
 
 
----
 
 <p align="center">
   <img src="https://github.com/Aluval/DataSci/raw/main/assets/data_viz.gif" height="240" />
 </p>
----
+
 
 🚀 Key Features
 
@@ -48,8 +47,6 @@ Cloud-safe session management
 
 
 
----
-
 📁 Smart CSV Handling
 
 Auto-detect encoding
@@ -60,9 +57,6 @@ Auto-convert numeric fields
 
 Preview first 20 rows
 
-
-
----
 
 📊 Auto Visualizations (Plotly)
 
@@ -80,7 +74,7 @@ Heatmap	Correlation matrix
 <p align="center">
   <img src="https://github.com/Aluval/DataSci/raw/main/assets/plot_anim.gif" height="220" />
 </p>
----
+
 
 🤖 Machine Learning Engine
 
@@ -104,7 +98,9 @@ Train/Test split • StandardScaler normalization • Label encoding • Auto pr
 <p align="center">
   <img src="https://github.com/Aluval/DataSci/raw/main/assets/ml_anim.gif" height="230" />
 </p>
----
+
+
+
 
 ***📝 Professional PDF Reports (ReportLab)
 
@@ -121,7 +117,7 @@ Embedded PNG charts
 Clean table formatting
 
 
----
+
 
 🏗 Tech Stack
 
@@ -135,7 +131,7 @@ Cloud:
 Firebase Auth • Firestore • Render Deployment
 
 
----
+
 
 ⚙️ Environment Variables
 
@@ -150,7 +146,7 @@ Firebase Auth • Firestore • Render Deployment
 
 </details>
 `
----
+
 
 📌 Recruiter / HR Highlights
 
@@ -160,7 +156,7 @@ Firebase Auth • Firestore • Render Deployment
 ⭐ Professional Reporting — Auto-generated branded PDFs
 
 
----
+
 
 ###⚠️ Performance Note (Render Free Tier)
 
@@ -179,7 +175,7 @@ App restarts are normal under high load — not a bug.
 ✅ All backend functions are fully optimized; only cloud limits cause temporary slowdown.
 
 
----
+
 
 🚀 Live Demo
 
@@ -192,7 +188,7 @@ App restarts are normal under high load — not a bug.
 </p>
 
 
----
+
 
 🧑‍💻 Developer
 
@@ -202,7 +198,7 @@ Aluvala Ediga Harsha Vardhan Goud
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/aluvala-ediga-harsha-vardhan-goud-83241a296)
 
 
----
+
 
 🛠 Installation (Local)
 
@@ -212,7 +208,7 @@ pip install -r requirements.txt
 python app.py
 
 
----
+
 
 📄 License
 
@@ -220,7 +216,7 @@ MIT License
 Do not sell commercially without permission.
 
 
----
+
 
 ⭐ Support the Project
 
