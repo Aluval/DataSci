@@ -1,4 +1,3 @@
-Here is your **GitHub-ready README.md**, perfectly formatted with **separate lines**, **clean sections**, and **point-wise clarity** — ideal for a professional GitHub project.
 
 ⚡ DataSci — AI Powered Data Analysis Platform
 =============================================
