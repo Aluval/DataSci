@@ -29,6 +29,13 @@ import pyrebase
 from firebase_admin import credentials, firestore
 import firebase_admin
 from dotenv import load_dotenv
+import plotly.io as pio
+
+pio.kaleido.scope.default_format = "png"
+pio.kaleido.scope.default_width = 900
+pio.kaleido.scope.default_height = 600
+pio.kaleido.scope.default_scale = 1
+
 load_dotenv()
 
 # ---------------- Flask app ----------------
@@ -370,48 +377,83 @@ def visualize():
 @login_required
 def visualize_print():
     store = get_store()
-    csv_text = store.get("csv_text", "")
+    csv_text = store.get('csv_text') or ''
     df = safe_read_csv(csv_text) if csv_text else pd.DataFrame()
 
     pdf_buffer = io.BytesIO()
     doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
-    styles = getSampleStyleSheet()
 
+    styles = getSampleStyleSheet()
     content = []
 
-    # HEADER
-    content.append(build_header(styles))
-    content.append(Spacer(1, 15))
+    # -------- HEADER BAR (BLUE) --------
+    header_table = Table(
+        [
+            [
+                RLImage("static/images/datasci.png", width=40, height=40),
+                Paragraph("<b>DataSci – AI Powered Data Analysis</b>", styles["Title"])
+            ]
+        ],
+        colWidths=[50, 400]
+    )
 
-    # MAIN BORDER BOX CONTENT
-    box = []
+    header_table.setStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#0d6efd")),
+        ("TEXTCOLOR", (0, 0), (-1, -1), colors.white),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 10),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+        ("TOPPADDING", (0, 0), (-1, -1), 10),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+    ])
 
-    # Title
-    box.append(Paragraph("Visualization Report", styles['Heading1']))
-    box.append(Spacer(1, 12))
-
-    # Chart Image
-    img_b64 = store.get("last_visual_img")
-    if img_b64:
-        img = RLImage(io.BytesIO(base64.b64decode(img_b64)), width=460, height=260)
-        box.append(img)
-        box.append(Spacer(1, 12))
-
-    # Table
-    table_data = [df.head(10).columns.tolist()] + df.head(10).values.tolist()
-    box.append(Table(table_data))
-
-    content.append(wrap_in_border(box))
-
-    # FOOTER
+    content.append(header_table)
     content.append(Spacer(1, 20))
-    content.append(build_footer(styles))
+
+    # ------- SECTION TITLE -------
+    content.append(Paragraph("<b>Visualization Report</b>", styles['Heading2']))
+    content.append(Spacer(1, 10))
+
+    # -------- VISUALIZATION IMAGE --------
+    img_b64 = store.get('last_visual_img')
+    if img_b64:
+        try:
+            img_bytes = base64.b64decode(img_b64)
+            img_buf = io.BytesIO(img_bytes)
+            content.append(RLImage(img_buf, width=450, height=300))
+            content.append(Spacer(1, 20))
+        except:
+            content.append(Paragraph("Image could not be loaded.", styles["Normal"]))
+
+    # -------- TABLE INSIDE BORDER --------
+    table_data = [df.head(10).columns.tolist()] + df.head(10).values.tolist()
+    report_table = Table(table_data)
+
+    report_table.setStyle([
+        ("GRID", (0,0), (-1,-1), 1, colors.black),
+        ("BACKGROUND", (0,0), (-1,0), colors.whitesmoke),
+        ("ALIGN", (0,0), (-1,-1), "CENTER"),
+        ("FONTSIZE", (0,0), (-1,-1), 9)
+    ])
+
+    content.append(report_table)
+    content.append(Spacer(1, 40))
+
+    # ------- FOOTER --------
+    footer = Paragraph(
+        "Aluvala Ediga Harsha Vardhan Goud<br/>"
+        "MCA | AI & ML Developer • GitHub: github.com/Aluval<br/>"
+        "© 2025 DataSci Platform",
+        styles["Normal"]
+    )
+    content.append(footer)
 
     doc.build(content)
     pdf_buffer.seek(0)
 
-    return send_file(pdf_buffer, mimetype="application/pdf",
-                     as_attachment=True, download_name="visualization_report.pdf")
+    return send_file(pdf_buffer, mimetype='application/pdf',
+                     as_attachment=True, download_name='visualize_report.pdf')
+
 
 
 @app.route('/predict', methods=['GET','POST'])
@@ -578,54 +620,92 @@ def predict():
 @login_required
 def predict_print():
     store = get_store()
-    pred_csv = store.get("predicted_csv") or store.get("csv_text")
-    df = safe_read_csv(pred_csv) if pred_csv else pd.DataFrame()
+    pred_csv = store.get('predicted_csv') or store.get('csv_text', '')
+
+    try:
+        df = safe_read_csv(pred_csv)
+    except:
+        df = pd.DataFrame()
 
     pdf_buffer = io.BytesIO()
     doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
-    styles = getSampleStyleSheet()
 
+    styles = getSampleStyleSheet()
     content = []
 
-    # HEADER
-    content.append(build_header(styles))
+    # -------- HEADER --------
+    header_table = Table(
+        [
+            [
+                RLImage("static/images/datasci.png", width=40, height=40),
+                Paragraph("<b>DataSci – AI Powered Data Analysis</b>", styles["Title"])
+            ]
+        ],
+        colWidths=[50, 400]
+    )
+
+    header_table.setStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#0d6efd")),
+        ("TEXTCOLOR", (0, 0), (-1, -1), colors.white),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 10),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+        ("TOPPADDING", (0, 0), (-1, -1), 10),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+    ])
+
+    content.append(header_table)
+    content.append(Spacer(1, 20))
+
+    # -------- TITLE --------
+    content.append(Paragraph("<b>Prediction Report</b>", styles["Heading2"]))
     content.append(Spacer(1, 15))
 
-    # MAIN BORDER BOX
-    box = []
-
-    # Title
-    box.append(Paragraph("Prediction Report", styles['Heading1']))
-    box.append(Spacer(1, 12))
-
-    # Metrics
+    # -------- METRICS --------
     metrics = store.get("last_metrics", {})
     if metrics:
-        box.append(Paragraph(f"<b>Metrics:</b> {metrics}", styles['Normal']))
-        box.append(Spacer(1, 12))
+        content.append(Paragraph(f"<b>Metrics:</b> {metrics}", styles["Normal"]))
+        content.append(Spacer(1, 15))
 
-    # Prediction Plot
-    img_b64 = store.get("last_prediction_img")
+    # -------- PLOT IMAGE --------
+    img_b64 = store.get('last_prediction_img')
     if img_b64:
-        img = RLImage(io.BytesIO(base64.b64decode(img_b64)), width=460, height=260)
-        box.append(img)
-        box.append(Spacer(1, 12))
+        try:
+            img_bytes = base64.b64decode(img_b64)
+            img_buf = io.BytesIO(img_bytes)
+            content.append(RLImage(img_buf, width=450, height=300))
+            content.append(Spacer(1, 20))
+        except:
+            content.append(Paragraph("Prediction image not available.", styles["Normal"]))
 
-    # Table
+    # -------- TABLE --------
     table_data = [df.head(10).columns.tolist()] + df.head(10).values.tolist()
-    box.append(Table(table_data))
+    report_table = Table(table_data)
 
-    content.append(wrap_in_border(box))
+    report_table.setStyle([
+        ("GRID", (0,0), (-1,-1), 1, colors.black),
+        ("BACKGROUND", (0,0), (-1,0), colors.whitesmoke),
+        ("ALIGN", (0,0), (-1,-1), "CENTER"),
+        ("FONTSIZE", (0,0), (-1,-1), 9)
+    ])
 
-    # FOOTER
-    content.append(Spacer(1, 20))
-    content.append(build_footer(styles))
+    content.append(report_table)
+    content.append(Spacer(1, 40))
+
+    # -------- FOOTER --------
+    footer = Paragraph(
+        "Aluvala Ediga Harsha Vardhan Goud<br/>"
+        "MCA | AI & ML Developer • GitHub: github.com/Aluval<br/>"
+        "© 2025 DataSci Platform",
+        styles["Normal"]
+    )
+    content.append(footer)
 
     doc.build(content)
     pdf_buffer.seek(0)
 
-    return send_file(pdf_buffer, mimetype="application/pdf",
-                     as_attachment=True, download_name="prediction_report.pdf")
+    return send_file(pdf_buffer, mimetype='application/pdf',
+                     as_attachment=True, download_name='prediction_report.pdf')
 
 
 @app.route('/download_predicted')
@@ -669,5 +749,6 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
+
 
 
