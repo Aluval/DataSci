@@ -1,34 +1,76 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h3>Dashboard Overview</h3>
-<div class="row mb-3">
-  {% for k in kpis %}
-  <div class="col-md-2 mb-3">
-    <div class="kpi-card" style="background: {{ k.color }}">
-      <div class="small">{{ k.name }}</div>
-      <div style="font-size:1.4rem;font-weight:700">{{ k.value }}</div>
+
+<div class="container mt-4 mb-5">
+
+    <!-- Page Title -->
+    <h2 class="fw-bold text-primary text-center mb-4">
+        Dashboard Overview
+    </h2>
+
+    <!-- KPI CARDS -->
+    <div class="row g-3">
+
+        {% for kpi in kpis %}
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="card shadow-sm text-center p-3" style="border-radius: 12px;">
+                <h6 class="fw-semibold">{{ kpi.name }}</h6>
+                <h4 class="fw-bold" style="color: {{ kpi.color }}">{{ kpi.value }}</h4>
+            </div>
+        </div>
+        {% endfor %}
+
     </div>
-  </div>
-  {% endfor %}
+
+    <!-- CHARTS -->
+    <div class="row mt-4 g-4">
+
+        <!-- Trend Chart -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow p-3" style="border-radius: 12px;">
+                <h5 class="fw-semibold mb-2 text-primary">Trend Analysis</h5>
+                <div class="chart-container">
+                    {{ trend_plot | safe }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Donut / Bar Chart -->
+        <div class="col-12 col-lg-6">
+            <div class="card shadow p-3" style="border-radius: 12px;">
+                <h5 class="fw-semibold mb-2 text-primary">Distribution</h5>
+                <div class="chart-container">
+                    {{ donut_plot | safe }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- DATA PREVIEW -->
+    <div class="card shadow mt-4 p-3" style="border-radius: 12px;">
+        <h5 class="fw-semibold text-primary mb-3">Data Preview (first 20 rows)</h5>
+
+        <div class="table-responsive">
+            {{ table_html | safe }}
+        </div>
+    </div>
+
 </div>
 
-<div class="row">
-  <div class="col-md-7">
-    <div class="card p-3 mb-3">
-      <h5>Trend</h5>
-      <div>{% if trend_plot %}{{ trend_plot | safe }}{% else %}<p>No trend available</p>{% endif %}</div>
-    </div>
-    <div class="card p-3">
-      <h5>Preview</h5>
-      <div>{{ table_html | safe }}</div>
-    </div>
-  </div>
+<style>
+    /* Make plotly charts responsive */
+    .chart-container iframe {
+        width: 100% !important;
+        height: 350px !important;
+    }
 
-  <div class="col-md-5">
-    <div class="card p-3 mb-3">
-      <h5>Distribution</h5>
-      <div>{% if donut_plot %}{{ donut_plot | safe }}{% else %}<p>No distribution</p>{% endif %}</div>
-    </div>
-  </div>
-</div>
+    @media (max-width: 768px) {
+        .chart-container iframe {
+            height: 260px !important;
+        }
+    }
+</style>
+
 {% endblock %}
