@@ -23,15 +23,6 @@
     <label class="fw-semibold">Password</label>
     <input class="form-control mb-3" type="password" name="password" required>
 
-    <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" name="agree" id="agreeLogin">
-        <label class="form-check-label" for="agreeLogin">
-            I agree to the 
-            <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms</a> &
-            <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy Policy</a>
-        </label>
-    </div>
-
     <button class="btn btn-primary w-100">Login</button>
 
     <a href="{{ url_for('register') }}" class="btn btn-link w-100 mt-2">
@@ -39,5 +30,4 @@
     </a>
 </form>
 
-<!-- Modals stay same -->
 {% endblock %}
