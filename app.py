@@ -32,23 +32,18 @@ from dotenv import load_dotenv
 import plotly.io as pio
 
 
-# Force Chromium path for Kaleido (Render)
-os.environ["PATH"] += os.pathsep + "/usr/bin"
-os.environ["CHROME_BIN"] = "/usr/bin/chromium-browser"
-os.environ["GOOGLE_CHROME_BIN"] = "/usr/bin/chromium-browser"
-os.environ["CHROMIUM_PATH"] = "/usr/bin/chromium-browser"
-os.environ["KALIEDO_BROWSER"] = "/usr/bin/chromium-browser"
 
+# Enable Kaleido (required for PNG export on Render)
+pio.io.kaleido.enabled = True
 
-# Force Kaleido to use this chromium
-pio.kaleido.scope.chromium_path = "/usr/bin/chromium-browser"
-pio.kaleido.scope.mathjax = None  # reduces errors
-# -------------- Plotly/Kaleido defaults --------------
-# these help produce consistent images when calling pio.to_image
-pio.kaleido.scope.default_format = "png"
-pio.kaleido.scope.default_width = 900
-pio.kaleido.scope.default_height = 600
-pio.kaleido.scope.default_scale = 1
+# Global PNG export settings
+pio.defaults.width = 900
+pio.defaults.height = 600
+pio.defaults.scale = 1
+
+# Chromium path used by Render
+pio.defaults.chromium_path = "/usr/bin/chromium"
+
 
 load_dotenv()
 
@@ -744,4 +739,5 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
+
 
