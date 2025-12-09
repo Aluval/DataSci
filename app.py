@@ -31,6 +31,8 @@ import firebase_admin
 from dotenv import load_dotenv
 import plotly.io as pio
 
+# -------------- Plotly/Kaleido defaults --------------
+# these help produce consistent images when calling pio.to_image
 pio.kaleido.scope.default_format = "png"
 pio.kaleido.scope.default_width = 900
 pio.kaleido.scope.default_height = 600
@@ -67,6 +69,7 @@ else:
     db = None
 
 
+
 # ---------------- Helpers ----------------
 def safe_read_csv(text):
     encodings = ['utf-8', 'latin1', 'cp1252']
@@ -97,63 +100,19 @@ def sample_for_plot(df, n=1000):
         return df.sample(n=n, random_state=42)
     except Exception:
         return df.head(n)
-    
-def build_header(styles):
-    logo_path = os.path.join("static", "images", "datasci_logo.png")
-
-    header_table = Table(
-        [[
-            RLImage(logo_path, width=45, height=45),
-            Paragraph(
-                "<font color='white'><b>DataSci – AI Powered Data Analysis</b><br/>"
-                "© 2025 Aluvala Ediga Harsha Vardhan Goud</font>",
-                styles['Normal']
-            )
-        ]],
-        colWidths=[60, 440]
-    )
-
-    header_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#0d6efd')),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('LEFTPADDING', (0, 0), (-1, -1), 8),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 8),
-        ('TOPPADDING', (0, 0), (-1, -1), 6),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6)
-    ]))
-
-    return header_table
-
-def build_footer(styles):
-    return Paragraph(
-        "<center>"
-        "<b>Aluvala Ediga Harsha Vardhan Goud</b><br/>"
-        "MCA | AI & ML Developer • GitHub: github.com/Aluval<br/>"
-        "© 2025 DataSci Platform"
-        "</center>",
-        styles['Normal']
-    )
-
-def wrap_in_border(flowables):
-    t = Table([[flowables]], colWidths=[500])
-    t.setStyle(TableStyle([
-        ('BOX', (0, 0), (-1, -1), 1, colors.grey),
-        ('BACKGROUND', (0, 0), (-1, -1), colors.whitesmoke),
-        ('INNERPADDING', (0, 0), (-1, -1), 12)
-    ]))
-    return t
-
 
 def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if 'user' not in session:
-            if not request.endpoint == 'login':  # Prevent duplicate flashing
+            # avoid showing "Please log in" repeatedly across redirects
+            if not request.endpoint == 'login':
                 if 'flash_shown' not in session:
                     flash("Please log in.", "warning")
                     session['flash_shown'] = True
             return redirect(url_for('login'))
-        session.pop('flash_shown', None)  # Reset after successful login
+        # Reset flash flag after successful login
+        session.pop('flash_shown', None)
         return f(*args, **kwargs)
     return wrapper
 
@@ -166,6 +125,74 @@ def get_store():
     if sid not in FILE_STORE:
         FILE_STORE[sid] = {}
     return FILE_STORE[sid]
+
+# ---------------- PDF helper components ----------------
+LOGO_PATH = os.path.join("static", "images", "datasci_logo.png")  # your chosen B filename
+
+def safe_rl_image_from_b64(b64str, width=None, height=None):
+    """Return a ReportLab Image object created from a base64 image string (or raise)."""
+    img_bytes = base64.b64decode(b64str)
+    img_buf = io.BytesIO(img_bytes)
+    if width and height:
+        return RLImage(img_buf, width=width, height=height)
+    else:
+        return RLImage(img_buf)
+
+def build_header_table(styles, title_text="DataSci – AI Powered Data Analysis"):
+    # Try to include the logo if available; if not, render title only
+    logo_exists = os.path.exists(LOGO_PATH)
+    logo_rl = None
+    if logo_exists:
+        try:
+            logo_rl = RLImage(LOGO_PATH, width=40, height=40)
+        except Exception:
+            logo_rl = None
+
+    # Build a simple table with logo left and title right on blue background
+    if logo_rl:
+        header = Table([[logo_rl, Paragraph(f"<b>{title_text}</b>", styles['Title'])]],
+                       colWidths=[50, 440])
+    else:
+        header = Table([[Paragraph(f"<b>{title_text}</b>", styles['Title'])]],
+                       colWidths=[490])
+
+    header.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#0d6efd')),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 8),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+    ]))
+    return header
+
+def build_footer_paragraph(styles):
+    txt = ("<para align='center'>"
+           "<b>Aluvala Ediga Harsha Vardhan Goud</b><br/>"
+           "MCA | AI & ML Developer • GitHub: <u>github.com/Aluval</u><br/>"
+           "© 2025 DataSci Platform"
+           "</para>")
+    return Paragraph(txt, styles['Normal'])
+
+def make_bordered_box(flowables, width=500):
+    """Wrap a list of flowables (or a single flowable) into a bordered Table box."""
+    # If flowables is a list, put them inside a single cell vertically by concatenating with Spacer
+    if isinstance(flowables, list):
+        cell_content = flowables
+    else:
+        cell_content = [flowables]
+    # We create a single-cell table and put the flowables in that cell
+    t = Table([[cell_content]], colWidths=[width])
+    t.setStyle(TableStyle([
+        ('BOX', (0, 0), (-1, -1), 1, colors.grey),
+        ('BACKGROUND', (0, 0), (-1, -1), colors.whitesmoke),
+        ('LEFTPADDING', (0, 0), (-1, -1), 10),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+        ('TOPPADDING', (0, 0), (-1, -1), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+    ]))
+    return t
 
 # ---------------- Routes ----------------
 @app.route('/')
@@ -181,7 +208,6 @@ def register():
         password = request.form.get('password')
         agree = request.form.get('agree')
 
-        # ✔ Required agreement validation
         if not agree:
             flash("You must agree to the Terms & Privacy Policy.", "warning")
             return redirect(url_for('register'))
@@ -192,14 +218,11 @@ def register():
                 db.collection('users').document(user['localId']).set({
                     'fullName': fullName, 'email': email, 'mobile': mobile
                 })
-
             flash("Account created successfully — please login.", "success")
             return redirect(url_for('login'))
-
         except Exception as e:
             flash(f"Registration failed: {e}", "danger")
             return redirect(url_for('register'))
-
     return render_template('register.html')
 
 @app.route('/login', methods=['GET','POST'])
@@ -209,7 +232,6 @@ def login():
         password = request.form.get('password')
         agree = request.form.get('agree')
 
-        # ✔ Required agreement validation
         if not agree:
             flash("Please agree to the Terms & Privacy Policy to continue.", "warning")
             return redirect(url_for('login'))
@@ -218,14 +240,11 @@ def login():
             user = auth.sign_in_with_email_and_password(email, password)
             session['user'] = email
             session['user_id'] = user.get('localId')
-
             flash("Logged in.", "success")
             return redirect(url_for('upload'))
-
         except Exception as e:
             flash(f"Login failed: {e}", "danger")
             return redirect(url_for('login'))
-
     return render_template('login.html')
 
 @app.route('/logout')
@@ -363,10 +382,12 @@ def visualize():
             if fig is not None:
                 plot_html = fig.to_html(full_html=False)
                 store['last_plot_html'] = plot_html
+                # try to save as base64 image for PDF
                 try:
                     img_bytes = pio.to_image(fig, format='png')
                     store['last_visual_img'] = base64.b64encode(img_bytes).decode()
-                except:
+                except Exception as e:
+                    # image creation may fail on some environments; remove key so PDF falls back gracefully
                     store.pop('last_visual_img', None)
         except Exception as e:
             flash(f"Plot error: {e}", "danger")
@@ -382,79 +403,67 @@ def visualize_print():
 
     pdf_buffer = io.BytesIO()
     doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
-
     styles = getSampleStyleSheet()
     content = []
 
-    # -------- HEADER BAR (BLUE) --------
-    header_table = Table(
-        [
-            [
-                RLImage("static/images/datasci.png", width=40, height=40),
-                Paragraph("<b>DataSci – AI Powered Data Analysis</b>", styles["Title"])
-            ]
-        ],
-        colWidths=[50, 400]
-    )
-
-    header_table.setStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#0d6efd")),
-        ("TEXTCOLOR", (0, 0), (-1, -1), colors.white),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("LEFTPADDING", (0, 0), (-1, -1), 10),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-        ("TOPPADDING", (0, 0), (-1, -1), 10),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
-    ])
-
-    content.append(header_table)
-    content.append(Spacer(1, 20))
-
-    # ------- SECTION TITLE -------
+    # Header
+    content.append(build_header_table(styles))
+    content.append(Spacer(1, 12))
     content.append(Paragraph("<b>Visualization Report</b>", styles['Heading2']))
     content.append(Spacer(1, 10))
 
-    # -------- VISUALIZATION IMAGE --------
+    # Attempt to add image (if available)
     img_b64 = store.get('last_visual_img')
     if img_b64:
         try:
-            img_bytes = base64.b64decode(img_b64)
-            img_buf = io.BytesIO(img_bytes)
-            content.append(RLImage(img_buf, width=450, height=300))
-            content.append(Spacer(1, 20))
-        except:
-            content.append(Paragraph("Image could not be loaded.", styles["Normal"]))
+            rl_img = safe_rl_image_from_b64(img_b64, width=450, height=300)
+            content.append(rl_img)
+            content.append(Spacer(1, 12))
+        except Exception:
+            content.append(Paragraph("Visualization image not available for PDF (fallback to table).", styles['Normal']))
+            content.append(Spacer(1, 8))
+    else:
+        content.append(Paragraph("No visualization image saved. See dashboard for interactive chart.", styles['Normal']))
+        content.append(Spacer(1, 8))
 
-    # -------- TABLE INSIDE BORDER --------
-    table_data = [df.head(10).columns.tolist()] + df.head(10).values.tolist()
-    report_table = Table(table_data)
+    # Build table data safely
+    try:
+        head = list(df.head(10).columns)
+        rows = df.head(10).values.tolist()
+        # If no columns or rows, create a single "No data" table
+        if len(head) == 0 or len(rows) == 0:
+            table_data = [["No data available"]]
+            col_count = 1
+        else:
+            table_data = [head] + rows
+            col_count = len(head)
+    except Exception:
+        table_data = [["No data available"]]
+        col_count = 1
 
-    report_table.setStyle([
-        ("GRID", (0,0), (-1,-1), 1, colors.black),
-        ("BACKGROUND", (0,0), (-1,0), colors.whitesmoke),
-        ("ALIGN", (0,0), (-1,-1), "CENTER"),
-        ("FONTSIZE", (0,0), (-1,-1), 9)
-    ])
+    # Create table with style (handle single cell table)
+    report_table = Table(table_data, hAlign='CENTER')
+    report_table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+        ('BACKGROUND', (0,0), (-1,0), colors.whitesmoke),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('FONTSIZE', (0,0), (-1,-1), 9),
+        ('LEFTPADDING', (0, 0), (-1, -1), 6),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+    ]))
 
-    content.append(report_table)
-    content.append(Spacer(1, 40))
+    # Wrap table in a bordered box for the visual effect
+    boxed = make_bordered_box([report_table])
+    content.append(boxed)
+    content.append(Spacer(1, 20))
 
-    # ------- FOOTER --------
-    footer = Paragraph(
-        "Aluvala Ediga Harsha Vardhan Goud<br/>"
-        "MCA | AI & ML Developer • GitHub: github.com/Aluval<br/>"
-        "© 2025 DataSci Platform",
-        styles["Normal"]
-    )
-    content.append(footer)
+    # Footer
+    content.append(build_footer_paragraph(styles))
 
+    # Build doc
     doc.build(content)
     pdf_buffer.seek(0)
-
-    return send_file(pdf_buffer, mimetype='application/pdf',
-                     as_attachment=True, download_name='visualize_report.pdf')
-
-
+    return send_file(pdf_buffer, mimetype='application/pdf', as_attachment=True, download_name='visualize_report.pdf')
 
 @app.route('/predict', methods=['GET','POST'])
 @login_required
@@ -513,7 +522,7 @@ def predict():
         else:
             X_train, X_test, y_train, y_test = X_cleaned, X_cleaned, y, y
 
-        # instantiate
+        # instantiate model
         model = None
         try:
             if model_type == "LinearRegression":
@@ -575,17 +584,14 @@ def predict():
                 df.loc[X_cleaned.index, 'Cluster'] = model.fit_predict(X_scaled)
                 metrics = {"clusters": int(df['Cluster'].nunique())}
 
+            # save results and metrics
             buf = io.StringIO()
             df.to_csv(buf, index=False)
             store['predicted_csv'] = buf.getvalue()
             store['last_metrics'] = metrics
 
-            short_prompt = f"Model: {model_type}. Metrics: {metrics}."
-            store['prediction_summary'] = short_prompt  # kept minimal, no external AI
-
+            # try saving scatter image for PDF
             results_html = df.head(20).to_html(classes='table table-striped', index=False)
-
-            # scatter plot for regression results
             if model_type not in ["KMeans3","KMeans5"] and 'Prediction' in df.columns and not is_classification:
                 try:
                     df_plot = df.dropna(subset=['Prediction', target]).copy()
@@ -602,9 +608,11 @@ def predict():
                             store['last_prediction_img'] = base64.b64encode(img_bytes).decode()
                         except:
                             store.pop('last_prediction_img', None)
-                except Exception as e:
-                    scatter_html = f"Plot error: {e}"
+                except Exception:
+                    scatter_html = None
 
+            short_prompt = f"Model: {model_type}. Metrics: {metrics}."
+            store['prediction_summary'] = short_prompt
             flash("Prediction completed.", "success")
         except Exception as e:
             flash(f"Prediction error: {e}", "danger")
@@ -615,98 +623,73 @@ def predict():
                            scatter_html=scatter_html,
                            metrics=store.get('last_metrics'))
 
-
 @app.route('/predict_print')
 @login_required
 def predict_print():
     store = get_store()
     pred_csv = store.get('predicted_csv') or store.get('csv_text', '')
-
     try:
         df = safe_read_csv(pred_csv)
-    except:
+    except Exception:
         df = pd.DataFrame()
 
     pdf_buffer = io.BytesIO()
     doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
-
     styles = getSampleStyleSheet()
     content = []
 
-    # -------- HEADER --------
-    header_table = Table(
-        [
-            [
-                RLImage("static/images/datasci.png", width=40, height=40),
-                Paragraph("<b>DataSci – AI Powered Data Analysis</b>", styles["Title"])
-            ]
-        ],
-        colWidths=[50, 400]
-    )
+    # Header
+    content.append(build_header_table(styles, title_text="DataSci – AI Powered Data Analysis"))
+    content.append(Spacer(1, 12))
 
-    header_table.setStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#0d6efd")),
-        ("TEXTCOLOR", (0, 0), (-1, -1), colors.white),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-        ("LEFTPADDING", (0, 0), (-1, -1), 10),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-        ("TOPPADDING", (0, 0), (-1, -1), 10),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
-    ])
-
-    content.append(header_table)
-    content.append(Spacer(1, 20))
-
-    # -------- TITLE --------
+    # Title & metrics
     content.append(Paragraph("<b>Prediction Report</b>", styles["Heading2"]))
-    content.append(Spacer(1, 15))
-
-    # -------- METRICS --------
+    content.append(Spacer(1, 8))
     metrics = store.get("last_metrics", {})
     if metrics:
         content.append(Paragraph(f"<b>Metrics:</b> {metrics}", styles["Normal"]))
-        content.append(Spacer(1, 15))
+        content.append(Spacer(1, 8))
 
-    # -------- PLOT IMAGE --------
+    # Prediction image (if available)
     img_b64 = store.get('last_prediction_img')
     if img_b64:
         try:
-            img_bytes = base64.b64decode(img_b64)
-            img_buf = io.BytesIO(img_bytes)
-            content.append(RLImage(img_buf, width=450, height=300))
-            content.append(Spacer(1, 20))
-        except:
-            content.append(Paragraph("Prediction image not available.", styles["Normal"]))
+            img_rl = safe_rl_image_from_b64(img_b64, width=450, height=300)
+            content.append(img_rl)
+            content.append(Spacer(1, 12))
+        except Exception:
+            content.append(Paragraph("Prediction image not available for PDF.", styles["Normal"]))
+            content.append(Spacer(1, 8))
+    else:
+        content.append(Paragraph("No prediction image saved. See results on the Predict page.", styles["Normal"]))
+        content.append(Spacer(1, 8))
 
-    # -------- TABLE --------
-    table_data = [df.head(10).columns.tolist()] + df.head(10).values.tolist()
-    report_table = Table(table_data)
+    # Table (safe handling)
+    try:
+        head = list(df.head(10).columns)
+        rows = df.head(10).values.tolist()
+        if len(head) == 0 or len(rows) == 0:
+            table_data = [["No data available"]]
+        else:
+            table_data = [head] + rows
+    except Exception:
+        table_data = [["No data available"]]
 
-    report_table.setStyle([
-        ("GRID", (0,0), (-1,-1), 1, colors.black),
-        ("BACKGROUND", (0,0), (-1,0), colors.whitesmoke),
-        ("ALIGN", (0,0), (-1,-1), "CENTER"),
-        ("FONTSIZE", (0,0), (-1,-1), 9)
-    ])
+    report_table = Table(table_data, hAlign='CENTER')
+    report_table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+        ('BACKGROUND', (0,0), (-1,0), colors.whitesmoke),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('FONTSIZE', (0,0), (-1,-1), 9),
+    ]))
 
-    content.append(report_table)
-    content.append(Spacer(1, 40))
+    content.append(make_bordered_box([report_table]))
+    content.append(Spacer(1, 20))
 
-    # -------- FOOTER --------
-    footer = Paragraph(
-        "Aluvala Ediga Harsha Vardhan Goud<br/>"
-        "MCA | AI & ML Developer • GitHub: github.com/Aluval<br/>"
-        "© 2025 DataSci Platform",
-        styles["Normal"]
-    )
-    content.append(footer)
-
+    content.append(build_footer_paragraph(styles))
     doc.build(content)
     pdf_buffer.seek(0)
-
-    return send_file(pdf_buffer, mimetype='application/pdf',
-                     as_attachment=True, download_name='prediction_report.pdf')
-
+    return send_file(pdf_buffer, mimetype='application/pdf', as_attachment=True, download_name='prediction_report.pdf')
 
 @app.route('/download_predicted')
 @login_required
@@ -749,6 +732,3 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
-
-
-
