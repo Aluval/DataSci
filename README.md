@@ -135,7 +135,7 @@ Firebase Auth • Firestore • Render Deployment
 
 ⚙️ Environment Variables
 
-`
+
 <details>
 <summary><strong>Click to Expand</strong></summary>{
   "FIREBASE_WEB_CONFIG": "{...}",
@@ -145,15 +145,15 @@ Firebase Auth • Firestore • Render Deployment
 }
 
 </details>
-`
+
 
 
 📌 Recruiter / HR Highlights
 
-⭐ Industry-Ready Architecture — Firebase + Render + Python ML
-⭐ Full-Stack + AI Skillset — Backend, ML, Auth, UI, PDF
-⭐ Real-Time Predictions — Accuracy & R² metrics
-⭐ Professional Reporting — Auto-generated branded PDFs
+-⭐ Industry-Ready Architecture — Firebase + Render + Python ML
+-⭐ Full-Stack + AI Skillset — Backend, ML, Auth, UI, PDF
+-⭐ Real-Time Predictions — Accuracy & R² metrics
+-⭐ Professional Reporting — Auto-generated branded PDFs
 
 
 
