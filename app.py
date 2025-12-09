@@ -31,9 +31,6 @@ import firebase_admin
 from dotenv import load_dotenv
 import plotly.io as pio
 
-import plotly.io as pio
-
-
 pio.kaleido.scope.default_format = "png"
 pio.kaleido.scope.default_width = 900
 pio.kaleido.scope.default_height = 600
@@ -771,5 +768,6 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
+
 
 
