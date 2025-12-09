@@ -1,13 +1,9 @@
 services:
   - type: web
-    name: datasci-ai
+    name: datasci
     env: python
-    buildCommand: |
-      pip install --upgrade pip
-      pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
-    plan: free
-    autoDeploy: true
