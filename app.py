@@ -68,10 +68,12 @@ if firebase_admin_json:
 else:
     db = None
 
-
-
 # ---------------- Helpers ----------------
 def safe_read_csv(text):
+    """
+    Attempts common encodings and separators to parse uploaded CSV text.
+    Raises the last exception on failure.
+    """
     encodings = ['utf-8', 'latin1', 'cp1252']
     delims = [None, ',', ';', '\t', '|']
     last_err = None
@@ -94,6 +96,7 @@ def safe_read_csv(text):
     raise last_err or ValueError("Unable to parse CSV")
 
 def sample_for_plot(df, n=1000):
+    """Return a sample of df for speed when plotting."""
     try:
         if len(df) <= n:
             return df
@@ -105,7 +108,7 @@ def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if 'user' not in session:
-            # avoid showing "Please log in" repeatedly across redirects
+            # avoid repeating "Please log in." flash across redirects
             if not request.endpoint == 'login':
                 if 'flash_shown' not in session:
                     flash("Please log in.", "warning")
@@ -117,6 +120,7 @@ def login_required(f):
     return wrapper
 
 def get_store():
+    """Return a dict store for the current session (in-memory)."""
     sid = session.get('sid')
     if not sid:
         sid = str(uuid.uuid4())
@@ -127,10 +131,10 @@ def get_store():
     return FILE_STORE[sid]
 
 # ---------------- PDF helper components ----------------
-LOGO_PATH = os.path.join("static", "images", "datasci_logo.png")  # your chosen B filename
+LOGO_PATH = os.path.join("static", "images", "datasci_logo.png")  # small logo (40x40 recommended)
 
 def safe_rl_image_from_b64(b64str, width=None, height=None):
-    """Return a ReportLab Image object created from a base64 image string (or raise)."""
+    """Return a ReportLab Image object created from a base64 image string."""
     img_bytes = base64.b64decode(b64str)
     img_buf = io.BytesIO(img_bytes)
     if width and height:
@@ -139,7 +143,7 @@ def safe_rl_image_from_b64(b64str, width=None, height=None):
         return RLImage(img_buf)
 
 def build_header_table(styles, title_text="DataSci – AI Powered Data Analysis"):
-    # Try to include the logo if available; if not, render title only
+    """Build header table with blue bar, logo left and title text."""
     logo_exists = os.path.exists(LOGO_PATH)
     logo_rl = None
     if logo_exists:
@@ -148,7 +152,6 @@ def build_header_table(styles, title_text="DataSci – AI Powered Data Analysis"
         except Exception:
             logo_rl = None
 
-    # Build a simple table with logo left and title right on blue background
     if logo_rl:
         header = Table([[logo_rl, Paragraph(f"<b>{title_text}</b>", styles['Title'])]],
                        colWidths=[50, 440])
@@ -176,13 +179,11 @@ def build_footer_paragraph(styles):
     return Paragraph(txt, styles['Normal'])
 
 def make_bordered_box(flowables, width=500):
-    """Wrap a list of flowables (or a single flowable) into a bordered Table box."""
-    # If flowables is a list, put them inside a single cell vertically by concatenating with Spacer
+    """Wrap flowables into a bordered Table cell for report styling."""
     if isinstance(flowables, list):
         cell_content = flowables
     else:
         cell_content = [flowables]
-    # We create a single-cell table and put the flowables in that cell
     t = Table([[cell_content]], colWidths=[width])
     t.setStyle(TableStyle([
         ('BOX', (0, 0), (-1, -1), 1, colors.grey),
@@ -199,6 +200,7 @@ def make_bordered_box(flowables, width=500):
 def index():
     return render_template('index.html')
 
+# Register + Login routes with "agree" checkbox validation
 @app.route('/register', methods=['GET','POST'])
 def register():
     if request.method == 'POST':
@@ -255,6 +257,7 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
+# Upload CSV
 @app.route('/upload', methods=['GET','POST'])
 @login_required
 def upload():
@@ -278,12 +281,14 @@ def upload():
         store = get_store()
         store['csv_text'] = text
         store['filename'] = f.filename
+        # clear previous artifacts
         for k in ['predicted_csv','last_visual_img','last_prediction_img','last_metrics','last_plot_html','preview_html','last_trend_html','last_donut_html']:
             store.pop(k, None)
         flash("File uploaded.", "success")
         return redirect(url_for('dashboard'))
     return render_template('upload.html')
 
+# Dashboard (KPIs, small charts)
 @app.route('/dashboard')
 @login_required
 def dashboard():
@@ -349,6 +354,7 @@ def dashboard():
                            table_html=preview_html,
                            last_metrics=store.get('last_metrics', {}))
 
+# Visualize route: generate Plotly figure, save HTML and attempt a kaleido image
 @app.route('/visualize', methods=['GET','POST'])
 @login_required
 def visualize():
@@ -378,22 +384,30 @@ def visualize():
             elif plot_type == 'histogram' and x:
                 fig = px.histogram(plot_df, x=x, title=f"Histogram of {x}")
             elif plot_type == 'heatmap':
-                fig = px.imshow(plot_df.corr(numeric_only=True), title='Correlation Heatmap')
+                # correlation heatmap - numeric only
+                corr = plot_df.corr(numeric_only=True)
+                if corr.empty:
+                    raise ValueError("No numeric columns available for heatmap")
+                fig = px.imshow(corr, title='Correlation Heatmap')
+
             if fig is not None:
+                # store interactive HTML
                 plot_html = fig.to_html(full_html=False)
                 store['last_plot_html'] = plot_html
-                # try to save as base64 image for PDF
+
+                # Try to export image via Kaleido; wrap in try/except (some envs may not support)
                 try:
-                    img_bytes = pio.to_image(fig, format='png')
+                    img_bytes = pio.to_image(fig, format='png', engine='kaleido')
                     store['last_visual_img'] = base64.b64encode(img_bytes).decode()
-                except Exception as e:
-                    # image creation may fail on some environments; remove key so PDF falls back gracefully
+                except Exception:
+                    # ensure no stale key remains
                     store.pop('last_visual_img', None)
         except Exception as e:
             flash(f"Plot error: {e}", "danger")
 
     return render_template('visualize.html', columns=columns, plot_html=plot_html, preview_html=preview_html)
 
+# Visualize -> Print PDF
 @app.route('/visualize_print')
 @login_required
 def visualize_print():
@@ -430,18 +444,13 @@ def visualize_print():
     try:
         head = list(df.head(10).columns)
         rows = df.head(10).values.tolist()
-        # If no columns or rows, create a single "No data" table
         if len(head) == 0 or len(rows) == 0:
             table_data = [["No data available"]]
-            col_count = 1
         else:
             table_data = [head] + rows
-            col_count = len(head)
     except Exception:
         table_data = [["No data available"]]
-        col_count = 1
 
-    # Create table with style (handle single cell table)
     report_table = Table(table_data, hAlign='CENTER')
     report_table.setStyle(TableStyle([
         ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
@@ -452,19 +461,15 @@ def visualize_print():
         ('RIGHTPADDING', (0, 0), (-1, -1), 6),
     ]))
 
-    # Wrap table in a bordered box for the visual effect
-    boxed = make_bordered_box([report_table])
-    content.append(boxed)
+    content.append(make_bordered_box([report_table]))
     content.append(Spacer(1, 20))
-
-    # Footer
     content.append(build_footer_paragraph(styles))
 
-    # Build doc
     doc.build(content)
     pdf_buffer.seek(0)
     return send_file(pdf_buffer, mimetype='application/pdf', as_attachment=True, download_name='visualize_report.pdf')
 
+# Predict route (maintains previous behavior, with Plotly scatter export)
 @app.route('/predict', methods=['GET','POST'])
 @login_required
 def predict():
@@ -489,7 +494,7 @@ def predict():
             flash("Select target & features.", "warning")
             return redirect(url_for('predict'))
 
-        # coerce features/target
+        # coerce features/target to numeric where applicable
         X_raw = df[features].apply(lambda c: pd.to_numeric(c.astype(str).str.replace(',','').str.strip(), errors='coerce'))
         if model_type in ["LogisticRegression","DecisionTreeClassifier","RandomForestClassifier","KNNClassifier","SVMClassifier"]:
             y_raw = df[target].astype(str)
@@ -604,9 +609,9 @@ def predict():
                                       line=dict(color="Red", width=1, dash="dash"))
                         scatter_html = fig.to_html(full_html=False)
                         try:
-                            img_bytes = pio.to_image(fig, format='png')
+                            img_bytes = pio.to_image(fig, format='png', engine='kaleido')
                             store['last_prediction_img'] = base64.b64encode(img_bytes).decode()
-                        except:
+                        except Exception:
                             store.pop('last_prediction_img', None)
                 except Exception:
                     scatter_html = None
@@ -623,6 +628,7 @@ def predict():
                            scatter_html=scatter_html,
                            metrics=store.get('last_metrics'))
 
+# Predict -> print PDF
 @app.route('/predict_print')
 @login_required
 def predict_print():
@@ -691,6 +697,7 @@ def predict_print():
     pdf_buffer.seek(0)
     return send_file(pdf_buffer, mimetype='application/pdf', as_attachment=True, download_name='prediction_report.pdf')
 
+# Download predicted csv
 @app.route('/download_predicted')
 @login_required
 def download_predicted():
@@ -701,6 +708,7 @@ def download_predicted():
         return redirect(url_for('predict'))
     return send_file(io.BytesIO(csv_text.encode()), mimetype="text/csv", as_attachment=True, download_name="predicted.csv")
 
+# Profile page (if Firestore available)
 @app.route('/profile', methods=['GET','POST'])
 @login_required
 def profile():
@@ -732,7 +740,4 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
-
-
-
 
