@@ -23,6 +23,8 @@ from sklearn.metrics import r2_score, accuracy_score
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image as RLImage, Table
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from reportlab.platypus import TableStyle
 import pyrebase
 from firebase_admin import credentials, firestore
 import firebase_admin
@@ -34,8 +36,6 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", os.urandom(24))
 
 FILE_STORE = {}
-
-
 
 # ---------------- Firebase Web Config (SAFE) ----------------
 firebase_config_env = os.getenv("FIREBASE_WEB_CONFIG")
@@ -58,6 +58,8 @@ if firebase_admin_json:
         db = None
 else:
     db = None
+
+
 # ---------------- Helpers ----------------
 def safe_read_csv(text):
     encodings = ['utf-8', 'latin1', 'cp1252']
@@ -88,13 +90,63 @@ def sample_for_plot(df, n=1000):
         return df.sample(n=n, random_state=42)
     except Exception:
         return df.head(n)
+    
+def build_header(styles):
+    logo_path = os.path.join("static", "images", "datasci_logo.png")
+
+    header_table = Table(
+        [[
+            RLImage(logo_path, width=45, height=45),
+            Paragraph(
+                "<font color='white'><b>DataSci – AI Powered Data Analysis</b><br/>"
+                "© 2025 Aluvala Ediga Harsha Vardhan Goud</font>",
+                styles['Normal']
+            )
+        ]],
+        colWidths=[60, 440]
+    )
+
+    header_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#0d6efd')),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 8),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6)
+    ]))
+
+    return header_table
+
+def build_footer(styles):
+    return Paragraph(
+        "<center>"
+        "<b>Aluvala Ediga Harsha Vardhan Goud</b><br/>"
+        "MCA | AI & ML Developer • GitHub: github.com/Aluval<br/>"
+        "© 2025 DataSci Platform"
+        "</center>",
+        styles['Normal']
+    )
+
+def wrap_in_border(flowables):
+    t = Table([[flowables]], colWidths=[500])
+    t.setStyle(TableStyle([
+        ('BOX', (0, 0), (-1, -1), 1, colors.grey),
+        ('BACKGROUND', (0, 0), (-1, -1), colors.whitesmoke),
+        ('INNERPADDING', (0, 0), (-1, -1), 12)
+    ]))
+    return t
+
 
 def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if 'user' not in session:
-            flash("Please log in.", "warning")
+            if not request.endpoint == 'login':  # Prevent duplicate flashing
+                if 'flash_shown' not in session:
+                    flash("Please log in.", "warning")
+                    session['flash_shown'] = True
             return redirect(url_for('login'))
+        session.pop('flash_shown', None)  # Reset after successful login
         return f(*args, **kwargs)
     return wrapper
 
@@ -120,17 +172,27 @@ def register():
         email = request.form.get('email')
         mobile = request.form.get('mobile')
         password = request.form.get('password')
+        agree = request.form.get('agree')
+
+        # ✔ Required agreement validation
+        if not agree:
+            flash("You must agree to the Terms & Privacy Policy.", "warning")
+            return redirect(url_for('register'))
+
         try:
             user = auth.create_user_with_email_and_password(email, password)
             if db:
                 db.collection('users').document(user['localId']).set({
                     'fullName': fullName, 'email': email, 'mobile': mobile
                 })
+
             flash("Account created successfully — please login.", "success")
             return redirect(url_for('login'))
+
         except Exception as e:
             flash(f"Registration failed: {e}", "danger")
             return redirect(url_for('register'))
+
     return render_template('register.html')
 
 @app.route('/login', methods=['GET','POST'])
@@ -138,15 +200,25 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+        agree = request.form.get('agree')
+
+        # ✔ Required agreement validation
+        if not agree:
+            flash("Please agree to the Terms & Privacy Policy to continue.", "warning")
+            return redirect(url_for('login'))
+
         try:
             user = auth.sign_in_with_email_and_password(email, password)
             session['user'] = email
             session['user_id'] = user.get('localId')
+
             flash("Logged in.", "success")
             return redirect(url_for('upload'))
+
         except Exception as e:
             flash(f"Login failed: {e}", "danger")
             return redirect(url_for('login'))
+
     return render_template('login.html')
 
 @app.route('/logout')
@@ -155,7 +227,6 @@ def logout():
     if sid in FILE_STORE:
         FILE_STORE.pop(sid, None)
     session.clear()
-    flash("Logged out.", "success")
     return redirect(url_for('index'))
 
 @app.route('/upload', methods=['GET','POST'])
@@ -299,29 +370,49 @@ def visualize():
 @login_required
 def visualize_print():
     store = get_store()
-    csv_text = store.get('csv_text') or ''
+    csv_text = store.get("csv_text", "")
     df = safe_read_csv(csv_text) if csv_text else pd.DataFrame()
+
     pdf_buffer = io.BytesIO()
     doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
     styles = getSampleStyleSheet()
-    content = [Paragraph("Visualization Report", styles['Heading1']), Spacer(1,12)]
 
-    img_b64 = store.get('last_visual_img')
+    content = []
+
+    # HEADER
+    content.append(build_header(styles))
+    content.append(Spacer(1, 15))
+
+    # MAIN BORDER BOX CONTENT
+    box = []
+
+    # Title
+    box.append(Paragraph("Visualization Report", styles['Heading1']))
+    box.append(Spacer(1, 12))
+
+    # Chart Image
+    img_b64 = store.get("last_visual_img")
     if img_b64:
-        try:
-            img_bytes = base64.b64decode(img_b64)
-            img_buf = io.BytesIO(img_bytes)
-            img_rl = RLImage(img_buf, width=450, height=300)
-            content.append(img_rl)
-            content.append(Spacer(1,12))
-        except:
-            pass
+        img = RLImage(io.BytesIO(base64.b64decode(img_b64)), width=460, height=260)
+        box.append(img)
+        box.append(Spacer(1, 12))
 
-    preview = [df.head(8).columns.tolist()] + df.head(8).values.tolist() if not df.empty else [["No data"]]
-    content.append(Table(preview))
+    # Table
+    table_data = [df.head(10).columns.tolist()] + df.head(10).values.tolist()
+    box.append(Table(table_data))
+
+    content.append(wrap_in_border(box))
+
+    # FOOTER
+    content.append(Spacer(1, 20))
+    content.append(build_footer(styles))
+
     doc.build(content)
     pdf_buffer.seek(0)
-    return send_file(pdf_buffer, mimetype='application/pdf', as_attachment=True, download_name='visualize_report.pdf')
+
+    return send_file(pdf_buffer, mimetype="application/pdf",
+                     as_attachment=True, download_name="visualization_report.pdf")
+
 
 @app.route('/predict', methods=['GET','POST'])
 @login_required
@@ -482,41 +573,60 @@ def predict():
                            scatter_html=scatter_html,
                            metrics=store.get('last_metrics'))
 
+
 @app.route('/predict_print')
 @login_required
 def predict_print():
     store = get_store()
-    pred_csv = store.get('predicted_csv') or store.get('csv_text','')
-    try:
-        df = safe_read_csv(pred_csv)
-    except:
-        df = pd.DataFrame()
+    pred_csv = store.get("predicted_csv") or store.get("csv_text")
+    df = safe_read_csv(pred_csv) if pred_csv else pd.DataFrame()
+
     pdf_buffer = io.BytesIO()
     doc = SimpleDocTemplate(pdf_buffer, pagesize=letter)
     styles = getSampleStyleSheet()
-    content = [Paragraph("Prediction Report", styles['Heading1']), Spacer(1,12)]
-    # include a brief metrics line
-    metrics = store.get('last_metrics', {})
+
+    content = []
+
+    # HEADER
+    content.append(build_header(styles))
+    content.append(Spacer(1, 15))
+
+    # MAIN BORDER BOX
+    box = []
+
+    # Title
+    box.append(Paragraph("Prediction Report", styles['Heading1']))
+    box.append(Spacer(1, 12))
+
+    # Metrics
+    metrics = store.get("last_metrics", {})
     if metrics:
-        content.append(Paragraph(f"Metrics: {metrics}", styles['Normal']))
-        content.append(Spacer(1,12))
+        box.append(Paragraph(f"<b>Metrics:</b> {metrics}", styles['Normal']))
+        box.append(Spacer(1, 12))
 
-    img_b64 = store.get('last_prediction_img')
+    # Prediction Plot
+    img_b64 = store.get("last_prediction_img")
     if img_b64:
-        try:
-            img_bytes = base64.b64decode(img_b64)
-            img_buf = io.BytesIO(img_bytes)
-            img_rl = RLImage(img_buf, width=450, height=300)
-            content.append(img_rl)
-            content.append(Spacer(1,12))
-        except:
-            pass
+        img = RLImage(io.BytesIO(base64.b64decode(img_b64)), width=460, height=260)
+        box.append(img)
+        box.append(Spacer(1, 12))
 
-    preview = [df.head(10).columns.tolist()] + df.head(10).values.tolist() if not df.empty else [["No data"]]
-    content.append(Table(preview))
+    # Table
+    table_data = [df.head(10).columns.tolist()] + df.head(10).values.tolist()
+    box.append(Table(table_data))
+
+    content.append(wrap_in_border(box))
+
+    # FOOTER
+    content.append(Spacer(1, 20))
+    content.append(build_footer(styles))
+
     doc.build(content)
     pdf_buffer.seek(0)
-    return send_file(pdf_buffer, mimetype='application/pdf', as_attachment=True, download_name='prediction_report.pdf')
+
+    return send_file(pdf_buffer, mimetype="application/pdf",
+                     as_attachment=True, download_name="prediction_report.pdf")
+
 
 @app.route('/download_predicted')
 @login_required
@@ -559,11 +669,5 @@ def profile():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(debug=True, port=port)
-
-
-
-
-
-
 
 
