@@ -24,7 +24,7 @@ DataSci is an intelligent AI-based data analysis system that enables anyone to u
 *   Cloud-hosted, polished web interface
     
 
-🚀 Key Features
+### 🚀 Key Features
 ---------------
 
 ### 🔐 Secure User System (Firebase Auth + Firestore)
@@ -62,7 +62,7 @@ DataSci is an intelligent AI-based data analysis system that enables anyone to u
 *   Heatmap — Correlation matrix
     
 
-🤖 Machine Learning Engine
+### 🤖 Machine Learning Engine
 --------------------------
 
 ### 📌 Regression Models
@@ -109,7 +109,7 @@ DataSci is an intelligent AI-based data analysis system that enables anyone to u
 *   Automated prediction output
     
 
-📝 PDF Reporting (ReportLab)
+### 📝 PDF Reporting (ReportLab)
 ----------------------------
 
 *   Visualization report
@@ -123,7 +123,7 @@ DataSci is an intelligent AI-based data analysis system that enables anyone to u
 *   Clean tabular formatting
     
 
-🏗 Tech Stack
+### 🏗 Tech Stack
 -------------
 
 ### Frontend
@@ -163,12 +163,21 @@ DataSci is an intelligent AI-based data analysis system that enables anyone to u
 *   Render (Deployment)
     
 
-⚙️ Environment Variables
-------------------------
+### ⚙️ Environment Variables
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   {    "FIREBASE_WEB_CONFIG": "{...}",    "FIREBASE_ADMIN_JSON": "{...}",    "FLASK_SECRET": "your-secret-key",    "PORT": "5000"  }   `
+<details>
+<summary><strong>Click to Expand</strong></summary>
 
-📌 Recruiter / HR Highlights
+```json
+{
+  "FIREBASE_WEB_CONFIG": "{...}",
+  "FIREBASE_ADMIN_JSON": "{...}",
+  "FLASK_SECRET": "your-secret-key",
+  "PORT": "5000"
+}
+```
+
+### 📌 Recruiter / HR Highlights
 ----------------------------
 
 *   Industry-ready architecture (Firebase + Render + Python ML)
@@ -182,7 +191,7 @@ Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQL
 *   Strong deployment & cloud integration
     
 
-⚠️ Performance Note (Render Free Tier)
+### ⚠️ Performance Note (Render Free Tier)
 --------------------------------------
 
 *   Free tier offers only **512 MB RAM**
@@ -196,31 +205,45 @@ Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQL
 *   Recommended: use smaller datasets or upgrade plan
     
 
-🚀 Live Demo
+### 🚀 Live Demo
 ------------
 
-**🔗 Render Deployment:**[](https://datasci-sv3k.onrender.com)
+**🔗 Render Deployment:**
 
-[](https://datasci-sv3k.onrender.com)[![](https://img.shields.io/badge/Open DataSci App-141414?style=for-the-badge&logo=python&logoColor=white)](https://datasci-sv3k.onrender.com)
+<p align="center">
+  <a href="https://datasci-sv3k.onrender.com" target="_blank">
+    <img src="https://img.shields.io/badge/Open DataSci App-141414?style=for-the-badge&logo=python&logoColor=white" />
+  </a>
+</p>
 
-🧑‍💻 Developer
+### 🧑‍💻 Developer
 ---------------
 
 **Aluvala Ediga Harsha Vardhan Goud**MCA — AI & ML Developer
 
-\[!\[GitHub\](https://img.shields.io/badge/GitHub-Aluval-black?style=for-the-badge&logo=github)\](https://github.com/Aluval)\[!\[LinkedIn\](https://img.shields.io/badge/LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin)\](https://www.linkedin.com/in/aluvala-ediga-harsha-vardhan-goud-83241a296)
+[![GitHub](https://img.shields.io/badge/GitHub-Aluval-black?style=for-the-badge&logo=github)](https://github.com/Aluval)
 
-🛠 Installation (Local Setup)
------------------------------
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/aluvala-ediga-harsha-vardhan-goud-83241a296)
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   git clone https://github.com/Aluval/DataSci.git  cd DataSci  pip install -r requirements.txt  python app.py   `
+### 🛠 Installation (Local Setup)
 
-📄 License
+<details>
+<summary><strong>Click to Expand</strong></summary>
+
+```bash
+git clone https://github.com/Aluval/DataSci.git
+cd DataSci
+pip install -r requirements.txt
+python app.py
+```
+
+
+### 📄 License
 ----------
 
 MIT LicenseDo not sell commercially without permission.
 
-⭐ Support the Project
+### ⭐ Support the Project
 ---------------------
 
 If you found this project useful:
