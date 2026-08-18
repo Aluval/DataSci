@@ -1,43 +1,63 @@
 {% extends "base.html" %}
 
+{% block title %}ML Prediction Engine | DataSci{% endblock %}
+
 {% block content %}
+<div class="container my-2" data-aos="fade-up">
 
-<div class="container mt-4 mb-5">
+    <!-- Page Header -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-white mb-1">
+            Machine Learning <span class="text-gradient">Prediction Engine</span>
+        </h2>
+        <p class="small mx-auto" style="max-width: 650px; color: var(--text-sub);">
+            Select algorithms, configure training parameters, evaluate real-time validation metrics, and export predicted datasets.
+        </p>
+    </div>
 
-    <h2 class="fw-bold text-primary text-center mb-4">Machine Learning Prediction</h2>
+    <!-- Prediction Configuration Form -->
+    <div class="glass-card mb-4">
+        <h5 class="fw-bold text-white mb-3">
+            <i class="bi bi-sliders text-info me-2"></i>Model & Feature Configuration
+        </h5>
 
-    <!-- Prediction Form -->
-    <div class="card shadow p-4 mb-4" style="border-radius: 12px;">
-        <h5 class="fw-semibold text-primary mb-3">Select Model & Columns</h5>
-
-        <form method="POST" class="row g-3">
+        <form method="POST" class="row g-4">
 
             <!-- Model Selection -->
             <div class="col-12 col-md-4">
-                <label class="form-label fw-semibold">Model</label>
+                <label class="form-label small text-secondary fw-semibold">Target Algorithm</label>
                 <select class="form-select" name="model" required>
-                    <option value="LinearRegression">Linear Regression</option>
-                    <option value="DecisionTreeRegressor">Decision Tree Regressor</option>
-                    <option value="RandomForestRegressor">Random Forest Regressor</option>
-                    <option value="KNNRegressor">KNN Regressor</option>
-                    <option value="SVR">SVR</option>
+                    <optgroup label="Regression Models">
+                        <option value="LinearRegression">Linear Regression</option>
+                        <option value="DecisionTreeRegressor">Decision Tree Regressor</option>
+                        <option value="RandomForestRegressor">Random Forest Regressor</option>
+                        <option value="KNNRegressor">KNN Regressor</option>
+                        <option value="SVR">Support Vector Regressor (SVR)</option>
+                    </optgroup>
 
-                    <option value="LogisticRegression">Logistic Regression</option>
-                    <option value="DecisionTreeClassifier">Decision Tree Classifier</option>
-                    <option value="RandomForestClassifier">Random Forest Classifier</option>
-                    <option value="KNNClassifier">KNN Classifier</option>
-                    <option value="SVMClassifier">SVM Classifier</option>
+                    <optgroup label="Classification Models">
+                        <option value="LogisticRegression">Logistic Regression</option>
+                        <option value="DecisionTreeClassifier">Decision Tree Classifier</option>
+                        <option value="RandomForestClassifier">Random Forest Classifier ★</option>
+                        <option value="KNNClassifier">KNN Classifier</option>
+                        <option value="SVMClassifier">SVM Classifier</option>
+                    </optgroup>
 
-                    <option value="KMeans3">K-Means (3 Clusters)</option>
-                    <option value="KMeans5">K-Means (5 Clusters)</option>
+                    <optgroup label="Clustering Models">
+                        <option value="KMeans3">K-Means (3 Clusters)</option>
+                        <option value="KMeans5">K-Means (5 Clusters)</option>
+                    </optgroup>
                 </select>
+                <div class="small mt-1" style="font-size: 0.78rem; color: var(--accent-cyan);">
+                    <i class="bi bi-shield-check me-1"></i>Algorithm validation active
+                </div>
             </div>
 
             <!-- Target Column -->
             <div class="col-12 col-md-4">
-                <label class="form-label fw-semibold">Target Column</label>
+                <label class="form-label small text-secondary fw-semibold">Target Dependent Variable (Y)</label>
                 <select class="form-select" name="target" required>
-                    <option value="">Choose...</option>
+                    <option value="">Choose target variable...</option>
                     {% for col in columns %}
                     <option value="{{ col }}">{{ col }}</option>
                     {% endfor %}
@@ -46,96 +66,200 @@
 
             <!-- Feature Columns -->
             <div class="col-12 col-md-4">
-                <label class="form-label fw-semibold">Feature Columns (Multi-select)</label>
-                <select class="form-select" name="features" multiple required>
+                <label class="form-label small text-secondary fw-semibold">Predictive Features (X - Multi-select)</label>
+                <select class="form-select" name="features" multiple required style="min-height: 100px;">
                     {% for col in columns %}
                     <option value="{{ col }}">{{ col }}</option>
                     {% endfor %}
                 </select>
             </div>
 
-            <!-- Train/Test Split Toggle -->
-            <div class="col-12 col-md-4">
-                <label class="form-label fw-semibold">Use Train-Test Split?</label><br>
-                <input type="checkbox" name="use_split">
-                <span class="ms-2">Enable Split</span>
+            <!-- Train/Test Split Checkbox -->
+            <div class="col-12 col-md-4 d-flex align-items-center">
+                <div class="form-check p-0 d-flex align-items-center gap-2">
+                    <input class="form-check-input m-0" type="checkbox" name="use_split" id="useSplitCheck" style="background-color: rgba(13, 22, 41, 0.85); border-color: var(--border-subtle); width: 1.2em; height: 1.2em;">
+                    <label class="form-check-label small text-white fw-semibold" for="useSplitCheck">
+                        Enable Validation Split
+                    </label>
+                </div>
             </div>
 
             <!-- Test Size -->
             <div class="col-12 col-md-4">
-                <label class="form-label fw-semibold">Test Size (0.1 - 0.5)</label>
-                <input type="number" step="0.1" min="0.1" max="0.5" class="form-control" name="test_size" placeholder="0.2">
+                <label class="form-label small text-secondary fw-semibold">Validation Test Ratio (0.1 - 0.5)</label>
+                <input type="number" step="0.1" min="0.1" max="0.5" class="form-control" name="test_size" placeholder="Default: 0.2">
             </div>
 
-            <!-- Submit -->
-            <div class="col-12 col-md-4">
-                <label class="form-label fw-semibold">&nbsp;</label>
-                <button class="btn btn-primary w-100">Run Prediction</button>
+            <!-- Submit Button -->
+            <div class="col-12 col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-glow-primary w-100 py-2">
+                    <i class="bi bi-cpu me-1"></i> Train & Predict
+                </button>
             </div>
 
         </form>
     </div>
 
-    <!-- Results + Metrics Row -->
-    <div class="row">
+    <!-- Model Explanation Banner -->
+    {% if model_explanation %}
+    <div class="glass-card mb-4" style="border-left: 4px solid var(--accent-cyan);">
+        <div class="d-flex align-items-start gap-2">
+            <i class="bi bi-info-circle text-info fs-5 mt-1"></i>
+            <div>
+                <strong class="text-white d-block mb-1">Algorithmic Diagnostics</strong>
+                <span class="small" style="color: var(--text-sub);">{{ model_explanation }}</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
-        <!-- Results -->
-        <div class="col-12 col-lg-8 mb-4">
-            <div class="card shadow p-3" style="border-radius: 12px;">
-                <h5 class="fw-semibold text-primary mb-3">Prediction Results (Top 20 Rows)</h5>
-                <div class="table-responsive">
+    <!-- Results & Metrics -->
+    <div class="row g-4 mb-4">
+
+        <!-- Prediction Output Table -->
+        <div class="col-12 col-lg-8">
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="fw-bold text-white mb-0">
+                        <i class="bi bi-table text-info me-2"></i>Inferred Results <span class="fw-normal small" style="color: var(--text-sub);">(Top 20 Rows)</span>
+                    </h5>
+                    <span class="badge" style="background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan);">Batch Output</span>
+                </div>
+
+                <div class="table-responsive styled-table-container">
                     {% if results_table %}
                         {{ results_table | safe }}
                     {% else %}
-                        <p class="text-muted mb-0">No results yet.</p>
+                        <div class="text-center py-5" style="color: var(--text-sub);">
+                            <i class="bi bi-terminal fs-1 d-block mb-2 text-secondary"></i>
+                            Execute a prediction job above to render sample inferences.
+                        </div>
                     {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- Metrics -->
-        <div class="col-12 col-lg-4 mb-4">
-            <div class="card shadow p-3" style="border-radius: 12px;">
-                <h5 class="fw-semibold text-primary mb-3">Model Metrics</h5>
-                {% if metrics %}
-                <pre class="p-2 bg-light rounded">{{ metrics }}</pre>
-                {% else %}
-                <p class="text-muted">No metrics calculated.</p>
-                {% endif %}
+        <!-- Evaluation Metrics Panel -->
+        <div class="col-12 col-lg-4">
+            <div class="glass-card h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="fw-bold text-white mb-0">
+                            <i class="bi bi-speedometer2 text-info me-2"></i>Model Metrics
+                        </h5>
+                        <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: var(--accent-blue);">Performance</span>
+                    </div>
 
-                <!-- Buttons -->
-                <a href="{{ url_for('predict_print') }}" class="btn btn-outline-primary w-100 mt-3">Print PDF</a>
-                <a href="{{ url_for('download_predicted') }}" class="btn btn-outline-success w-100 mt-2">Download CSV</a>
+                    {% if metrics %}
+                        <pre class="metrics-terminal">{{ metrics }}</pre>
+                    {% else %}
+                        <div class="text-center py-4" style="color: var(--text-sub);">
+                            <p class="small mb-0">No validation scores available yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mt-3 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                    <a href="{{ url_for('predict_print') }}" class="btn btn-glow-outline w-100 mb-2 text-center d-block">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Generate PDF Summary
+                    </a>
+                    <a href="{{ url_for('download_predicted') }}" class="btn btn-sm btn-outline-success w-100 py-2 fw-semibold">
+                        <i class="bi bi-download me-1"></i> Download Inferred CSV
+                    </a>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Scatter Plot Section -->
-    <div class="card shadow p-3" style="border-radius: 12px;">
-        <h5 class="fw-semibold text-primary mb-3">Actual vs Predicted Plot</h5>
+    <!-- Actual vs Predicted Visualization -->
+    <div class="glass-card">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="fw-bold text-white mb-0">
+                <i class="bi bi-graph-up text-info me-2"></i>Actual vs. Predicted Variance
+            </h5>
+            <span class="badge" style="background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan);">Scatter Evaluation</span>
+        </div>
 
         {% if scatter_html %}
-        <div class="chart-container">
-            {{ scatter_html | safe }}
-        </div>
+            <div class="chart-container">
+                {{ scatter_html | safe }}
+            </div>
         {% else %}
-        <p class="text-muted">No plot available.</p>
+            <div class="text-center py-5" style="color: var(--text-sub);">
+                <i class="bi bi-scatter-chart fs-1 d-block mb-2 text-secondary"></i>
+                Variance and regression plot will display here after model convergence.
+            </div>
         {% endif %}
     </div>
 
 </div>
 
 <style>
-.chart-container iframe {
-    width: 100% !important;
-    height: 350px !important;
-}
-@media (max-width: 768px) {
-    .chart-container iframe {
-        height: 260px !important;
+    /* Responsive Chart Container */
+    .chart-container {
+        border-radius: 12px;
+        overflow: hidden;
+        background: rgba(5, 11, 20, 0.4);
+        border: 1px solid rgba(56, 189, 248, 0.08);
+        padding: 4px;
     }
-}
-</style>
 
+    .chart-container iframe {
+        width: 100% !important;
+        height: 380px !important;
+        border: none;
+    }
+
+    /* Terminal-style metrics preview */
+    .metrics-terminal {
+        background: #020610;
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        padding: 14px;
+        font-family: monospace;
+        font-size: 0.85rem;
+        color: var(--accent-cyan);
+        white-space: pre-wrap;
+        max-height: 240px;
+        overflow-y: auto;
+    }
+
+    /* Modern Table Styling for Pandas HTML outputs */
+    .styled-table-container table {
+        width: 100% !important;
+        background-color: transparent !important;
+        color: #e2e8f0 !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        font-size: 0.86rem;
+    }
+
+    .styled-table-container th {
+        background-color: rgba(6, 182, 212, 0.08) !important;
+        color: var(--accent-cyan) !important;
+        font-weight: 600 !important;
+        border-bottom: 1px solid var(--border-subtle) !important;
+        padding: 10px 12px !important;
+        white-space: nowrap;
+    }
+
+    .styled-table-container td {
+        background-color: transparent !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
+        padding: 8px 12px !important;
+        color: #cbd5e1 !important;
+        white-space: nowrap;
+    }
+
+    .styled-table-container tr:hover td {
+        background-color: rgba(56, 189, 248, 0.05) !important;
+    }
+
+    @media (max-width: 768px) {
+        .chart-container iframe {
+            height: 270px !important;
+        }
+    }
+</style>
 {% endblock %}

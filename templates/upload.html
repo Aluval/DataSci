@@ -1,34 +1,57 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% block title %}Upload Dataset | DataSci{% endblock %}
 
-<div class="container mt-5">
+{% block content %}
+<div class="container my-5" data-aos="fade-up">
     <div class="row justify-content-center">
         
         <div class="col-12 col-md-8 col-lg-6">
-            <div class="card shadow-lg p-4" style="border-radius: 12px;">
+            <div class="glass-card text-center p-4 p-md-5">
 
-                <h3 class="text-center mb-3 fw-bold text-primary">Upload CSV File</h3>
-                <p class="text-center text-muted">Upload your dataset to continue to dashboard</p>
+                <!-- Upload Icon Badge -->
+                <div class="mb-4">
+                    <div class="upload-icon-badge">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                    </div>
+                </div>
 
-                <form method="POST" enctype="multipart/form-data">
+                <h3 class="fw-bold text-white mb-2">
+                    Upload <span class="text-gradient">Dataset</span>
+                </h3>
+                <p class="small mx-auto mb-4" style="color: var(--text-sub); max-width: 380px;">
+                    Upload your structured CSV file to run automated exploratory data analysis and generate predictions.
+                </p>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Choose CSV File</label>
-                        <input 
-                            type="file" 
-                            name="file" 
-                            accept=".csv" 
-                            class="form-control p-3" 
-                            required>
+                <form method="POST" enctype="multipart/form-data" class="text-start">
+
+                    <div class="mb-4">
+                        <label class="form-label small text-secondary fw-semibold">Choose CSV File</label>
+                        <div class="upload-dropzone">
+                            <input 
+                                type="file" 
+                                name="file" 
+                                accept=".csv" 
+                                class="form-control file-input-custom" 
+                                required>
+                            <div class="dropzone-text small mt-2 text-center" style="color: var(--text-sub);">
+                                <i class="bi bi-filetype-csv text-info me-1"></i> Supports structured <code>.csv</code> datasets
+                            </div>
+                        </div>
                     </div>
 
-                    <button class="btn btn-primary w-100 mt-2 p-2 fw-semibold">
-                        Upload
+                    <button type="submit" class="btn btn-glow-primary w-100 py-3 fw-semibold">
+                        <i class="bi bi-lightning-charge me-1"></i> Upload & Process
                     </button>
                 </form>
 
-                <hr class="my-4">
+                <hr class="my-4" style="border-color: rgba(255, 255, 255, 0.08);">
+
+                <div class="d-flex align-items-center justify-content-center gap-3 text-secondary small">
+                    <span><i class="bi bi-shield-check text-info me-1"></i> In-Memory Processing</span>
+                    <span>•</span>
+                    <span><i class="bi bi-speedometer2 text-info me-1"></i> Instant EDA</span>
+                </div>
 
             </div>
         </div>
@@ -36,4 +59,55 @@
     </div>
 </div>
 
+<style>
+    .upload-icon-badge {
+        width: 72px;
+        height: 72px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(37, 99, 235, 0.15));
+        border: 1px solid var(--border-subtle);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: var(--accent-cyan);
+        box-shadow: 0 0 25px rgba(6, 182, 212, 0.2);
+    }
+
+    .upload-dropzone {
+        background: rgba(5, 11, 20, 0.5);
+        border: 1px dashed var(--border-subtle);
+        border-radius: 12px;
+        padding: 16px;
+        transition: border-color 0.2s ease;
+    }
+
+    .upload-dropzone:hover {
+        border-color: var(--accent-cyan);
+    }
+
+    .file-input-custom {
+        background: rgba(13, 22, 41, 0.85) !important;
+        border: 1px solid var(--border-subtle) !important;
+        color: var(--text-main) !important;
+        padding: 10px 14px;
+        border-radius: 8px;
+    }
+
+    .file-input-custom::file-selector-button {
+        background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(37, 99, 235, 0.2));
+        border: 1px solid var(--border-subtle);
+        color: var(--accent-cyan);
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 600;
+        margin-right: 12px;
+        transition: all 0.2s ease;
+    }
+
+    .file-input-custom::file-selector-button:hover {
+        background: var(--accent-cyan);
+        color: #050b14;
+    }
+</style>
 {% endblock %}

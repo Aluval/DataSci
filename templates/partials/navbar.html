@@ -1,28 +1,115 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="/">DataSci</a>
+<nav class="navbar navbar-expand-lg sticky-top" style="background: rgba(5, 11, 20, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(56, 189, 248, 0.15); z-index: 1000;">
+  <div class="container py-1">
+    <!-- Brand / Logo -->
+    <a class="navbar-brand d-flex align-items-center gap-2 text-white fw-bold m-0" href="/">
+      <img src="{{ url_for('static', filename='images/datasci_logo.png') }}" 
+           alt="DataSci Logo" 
+           style="height: 38px; width: auto; filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.4));">
+      <span class="fs-5 tracking-wide">Data<span style="background: linear-gradient(135deg, #67e8f9 0%, #3b82f6 50%, #9333ea 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Sci</span></span>
+    </a>
 
-    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
-      <span class="navbar-toggler-icon"></span>
+    <!-- Mobile Toggler -->
+    <button class="navbar-toggler border-0 shadow-none text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <i class="bi bi-list fs-2" style="color: #06b6d4;"></i>
     </button>
 
+    <!-- Navigation Links -->
     <div class="collapse navbar-collapse" id="navMenu">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
 
         {% if not session.get('user') %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Register</a></li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-custom px-3" href="{{ url_for('login') }}">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Login
+          </a>
+        </li>
+        <li class="nav-item mt-2 mt-lg-0">
+          <a class="btn btn-glow-primary btn-sm px-3 py-2 text-white" href="{{ url_for('register') }}">
+            <i class="bi bi-person-plus me-1"></i> Register
+          </a>
+        </li>
 
         {% else %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('upload') }}">Upload</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('visualize') }}">Visualize</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('predict') }}">Predict</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">Profile</a></li>
-        <li class="nav-item"><a class="nav-link text-warning" href="{{ url_for('logout') }}">Logout</a></li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-custom px-2" href="{{ url_for('upload') }}">
+            <i class="bi bi-cloud-arrow-up me-1"></i> Upload
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-custom px-2" href="{{ url_for('dashboard') }}">
+            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-custom px-2" href="{{ url_for('visualize') }}">
+            <i class="bi bi-bar-chart-line me-1"></i> Visualize
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-custom px-2" href="{{ url_for('predict') }}">
+            <i class="bi bi-cpu me-1"></i> Predict
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-custom px-2" href="{{ url_for('profile') }}">
+            <i class="bi bi-person-circle me-1"></i> Profile
+          </a>
+        </li>
+        <li class="nav-item mt-2 mt-lg-0 ms-lg-2">
+          <a class="btn btn-sm btn-logout px-3 py-1" href="{{ url_for('logout') }}">
+            <i class="bi bi-power me-1"></i> Logout
+          </a>
+        </li>
         {% endif %}
 
       </ul>
     </div>
   </div>
 </nav>
+
+<style>
+  .nav-link-custom {
+    color: #94a3b8 !important;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+  }
+
+  .nav-link-custom:hover {
+    color: #06b6d4 !important;
+  }
+
+  .btn-glow-primary {
+    background: linear-gradient(135deg, #06b6d4, #2563eb);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
+    transition: all 0.25s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-glow-primary:hover {
+    background: linear-gradient(135deg, #0891b2, #1d4ed8);
+    box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+    transform: translateY(-1px);
+    color: #ffffff !important;
+  }
+
+  .btn-logout {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171 !important;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+
+  .btn-logout:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+    color: #fca5a5 !important;
+  }
+</style>

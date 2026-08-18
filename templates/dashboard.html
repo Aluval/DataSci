@@ -1,58 +1,89 @@
 {% extends 'base.html' %}
 
+{% block title %}Dashboard Overview | DataSci{% endblock %}
+
 {% block content %}
+<div class="container my-2" data-aos="fade-up">
 
-<div class="container mt-4 mb-5">
-
-    <!-- Page Title -->
-    <h2 class="fw-bold text-primary text-center mb-4">
-        Dashboard Overview
-    </h2>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1">
+                Dashboard <span class="text-gradient">Overview</span>
+            </h2>
+            <p class="mb-0 small" style="color: var(--text-sub);">
+                Live metrics, distribution visualizers, and dataset schema analysis.
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('upload') }}" class="btn btn-sm btn-glow-outline">
+                <i class="bi bi-cloud-arrow-up me-1"></i> New Upload
+            </a>
+            <a href="{{ url_for('visualize') }}" class="btn btn-sm btn-glow-primary">
+                <i class="bi bi-bar-chart-line me-1"></i> Advanced Plots
+            </a>
+        </div>
+    </div>
 
     <!-- KPI CARDS -->
-    <div class="row g-3">
-
+    <div class="row g-3 mb-4">
         {% for kpi in kpis %}
         <div class="col-6 col-md-4 col-lg-2">
-            <div class="card shadow-sm text-center p-3" style="border-radius: 12px;">
-                <h6 class="fw-semibold">{{ kpi.name }}</h6>
-                <h4 class="fw-bold" style="color: {{ kpi.color }}">{{ kpi.value }}</h4>
+            <div class="glass-card text-center p-3 h-100">
+                <div class="text-uppercase fw-semibold mb-2" style="font-size: 0.75rem; letter-spacing: 0.8px; color: var(--text-sub);">
+                    {{ kpi.name }}
+                </div>
+                <h3 class="fw-bold m-0" style="color: {{ kpi.color if kpi.color else 'var(--accent-cyan)' }}; text-shadow: 0px 0px 15px rgba(6, 182, 212, 0.25);">
+                    {{ kpi.value }}
+                </h3>
             </div>
         </div>
         {% endfor %}
-
     </div>
 
     <!-- CHARTS -->
-    <div class="row mt-4 g-4">
-
+    <div class="row g-4 mb-4">
         <!-- Trend Chart -->
         <div class="col-12 col-lg-6">
-            <div class="card shadow p-3" style="border-radius: 12px;">
-                <h5 class="fw-semibold mb-2 text-primary">Trend Analysis</h5>
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="fw-bold text-white mb-0">
+                        <i class="bi bi-graph-up text-info me-2"></i>Trend Analysis
+                    </h5>
+                    <span class="badge" style="background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan); font-size: 0.75rem;">Interactive</span>
+                </div>
                 <div class="chart-container">
                     {{ trend_plot | safe }}
                 </div>
             </div>
         </div>
 
-        <!-- Donut / Bar Chart -->
+        <!-- Donut / Distribution Chart -->
         <div class="col-12 col-lg-6">
-            <div class="card shadow p-3" style="border-radius: 12px;">
-                <h5 class="fw-semibold mb-2 text-primary">Distribution</h5>
+            <div class="glass-card h-100">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="fw-bold text-white mb-0">
+                        <i class="bi bi-pie-chart text-info me-2"></i>Distribution
+                    </h5>
+                    <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); font-size: 0.75rem;">Plotly View</span>
+                </div>
                 <div class="chart-container">
                     {{ donut_plot | safe }}
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- DATA PREVIEW -->
-    <div class="card shadow mt-4 p-3" style="border-radius: 12px;">
-        <h5 class="fw-semibold text-primary mb-3">Data Preview (first 20 rows)</h5>
+    <!-- DATA PREVIEW TABLE -->
+    <div class="glass-card mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="fw-bold text-white mb-0">
+                <i class="bi bi-table text-info me-2"></i>Data Preview <span class="fw-normal small" style="color: var(--text-sub);">(First 20 Rows)</span>
+            </h5>
+            <span class="badge" style="background: rgba(255, 255, 255, 0.05); color: var(--text-sub); border: 1px solid rgba(255, 255, 255, 0.1);">Raw Stream</span>
+        </div>
 
-        <div class="table-responsive">
+        <div class="table-responsive styled-table-container">
             {{ table_html | safe }}
         </div>
     </div>
@@ -60,17 +91,56 @@
 </div>
 
 <style>
-    /* Make plotly charts responsive */
+    /* Responsive Chart Container */
+    .chart-container {
+        border-radius: 12px;
+        overflow: hidden;
+        background: rgba(5, 11, 20, 0.4);
+        border: 1px solid rgba(56, 189, 248, 0.08);
+        padding: 4px;
+    }
+
     .chart-container iframe {
         width: 100% !important;
-        height: 350px !important;
+        height: 360px !important;
+        border: none;
+    }
+
+    /* Dark Modern Table Styling for Pandas HTML outputs */
+    .styled-table-container table {
+        width: 100% !important;
+        background-color: transparent !important;
+        color: #e2e8f0 !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        font-size: 0.88rem;
+    }
+
+    .styled-table-container th {
+        background-color: rgba(6, 182, 212, 0.08) !important;
+        color: var(--accent-cyan) !important;
+        font-weight: 600 !important;
+        border-bottom: 1px solid var(--border-subtle) !important;
+        padding: 12px 14px !important;
+        white-space: nowrap;
+    }
+
+    .styled-table-container td {
+        background-color: transparent !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
+        padding: 10px 14px !important;
+        color: #cbd5e1 !important;
+        white-space: nowrap;
+    }
+
+    .styled-table-container tr:hover td {
+        background-color: rgba(56, 189, 248, 0.05) !important;
     }
 
     @media (max-width: 768px) {
         .chart-container iframe {
-            height: 260px !important;
+            height: 270px !important;
         }
     }
 </style>
-
 {% endblock %}

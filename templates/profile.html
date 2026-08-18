@@ -1,69 +1,153 @@
 {% extends "base.html" %}
 
+{% block title %}User Profile | DataSci{% endblock %}
+
 {% block content %}
+<div class="container my-2" data-aos="fade-up">
 
-<div class="container mt-4 mb-5">
+    <!-- Page Header -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-white mb-1">
+            User <span class="text-gradient">Profile</span>
+        </h2>
+        <p class="small mx-auto" style="max-width: 500px; color: var(--text-sub);">
+            Manage your account settings, personal details, and active workspace preferences.
+        </p>
+    </div>
 
-    <h2 class="fw-bold text-primary text-center mb-4">User Profile</h2>
+    <!-- Profile Card Container -->
+    <div class="glass-card mx-auto" style="max-width: 580px;">
 
-    <div class="card shadow p-4 mx-auto" style="max-width: 600px; border-radius: 12px;">
+        <!-- Avatar & Summary Banner -->
+        <div class="d-flex align-items-center gap-3 mb-4 pb-3" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+            <div class="profile-avatar-badge">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold text-white mb-0">{{ user.fullName if user.fullName else 'Account Owner' }}</h5>
+                <span class="small" style="color: var(--accent-cyan); font-weight: 500;">
+                    <i class="bi bi-shield-check me-1"></i>Verified Member
+                </span>
+            </div>
+        </div>
 
-        <h5 class="fw-semibold text-primary mb-3">Your Account Details</h5>
+        <h6 class="fw-bold text-white mb-3">
+            <i class="bi bi-person-gear text-info me-2"></i>Account Details
+        </h6>
 
         <form method="POST" class="row g-3">
 
             <!-- Full Name -->
             <div class="col-12">
-                <label class="form-label fw-semibold">Full Name</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    name="fullName" 
-                    value="{{ user.fullName }}"
-                    required>
+                <label class="form-label small text-secondary fw-semibold">Full Name</label>
+                <div class="input-group">
+                    <span class="input-group-text custom-input-addon">
+                        <i class="bi bi-person"></i>
+                    </span>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        name="fullName" 
+                        value="{{ user.fullName }}" 
+                        style="border-left: none;"
+                        required>
+                </div>
             </div>
 
-            <!-- Email (read-only) -->
+            <!-- Email (Read-Only) -->
             <div class="col-12">
-                <label class="form-label fw-semibold">Email</label>
-                <input 
-                    type="email" 
-                    class="form-control bg-light" 
-                    value="{{ user.email }}" 
-                    readonly>
+                <div class="d-flex justify-content-between align-items-center">
+                    <label class="form-label small text-secondary fw-semibold">Email Address</label>
+                    <span class="badge mb-1" style="background: rgba(255, 255, 255, 0.05); color: var(--text-sub); font-size: 0.72rem;">Read-Only</span>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-text custom-input-addon">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                    <input 
+                        type="email" 
+                        class="form-control" 
+                        style="background: rgba(5, 11, 20, 0.6) !important; border-left: none; color: var(--text-sub) !important;" 
+                        value="{{ user.email }}" 
+                        readonly>
+                </div>
             </div>
 
             <!-- Mobile -->
             <div class="col-12">
-                <label class="form-label fw-semibold">Mobile Number</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    name="mobile" 
-                    value="{{ user.mobile }}">
+                <label class="form-label small text-secondary fw-semibold">Mobile Number</label>
+                <div class="input-group">
+                    <span class="input-group-text custom-input-addon">
+                        <i class="bi bi-telephone"></i>
+                    </span>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        name="mobile" 
+                        value="{{ user.mobile }}" 
+                        placeholder="+91..."
+                        style="border-left: none;">
+                </div>
             </div>
 
             <!-- Save Button -->
-            <div class="col-12">
-                <button class="btn btn-primary w-100">Update Profile</button>
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-glow-primary w-100 py-2">
+                    <i class="bi bi-check2-circle me-1"></i> Update Profile
+                </button>
             </div>
 
         </form>
 
+        <!-- Divider -->
+        <div class="my-4" style="border-top: 1px solid rgba(255, 255, 255, 0.08);"></div>
+
         <!-- Logout Button -->
-        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger w-100 mt-3">Logout</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-logout-outline w-100 py-2 d-block text-center">
+            <i class="bi bi-power me-1"></i> Sign Out
+        </a>
 
     </div>
 
 </div>
 
 <style>
-/* Mobile responsiveness tweaks */
-@media (max-width: 768px) {
-    .card {
-        padding: 20px !important;
+    .profile-avatar-badge {
+        width: 58px;
+        height: 58px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(37, 99, 235, 0.2));
+        border: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        color: var(--accent-cyan);
+        box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
     }
-}
-</style>
 
+    .custom-input-addon {
+        background: rgba(13, 22, 41, 0.85);
+        border: 1px solid var(--border-subtle);
+        border-right: none;
+        color: var(--accent-cyan);
+    }
+
+    .btn-logout-outline {
+        background: rgba(239, 68, 68, 0.08);
+        color: #f87171 !important;
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+
+    .btn-logout-outline:hover {
+        background: rgba(239, 68, 68, 0.18);
+        border-color: #ef4444;
+        color: #fca5a5 !important;
+        transform: translateY(-1px);
+    }
+</style>
 {% endblock %}
