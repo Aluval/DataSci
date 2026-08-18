@@ -1,91 +1,130 @@
 {% extends "base.html" %}
 
+{% block title %}Data Visualization | DataSci{% endblock %}
+
 {% block content %}
+<div class="container my-2" data-aos="fade-up">
 
-<div class="container mt-4 mb-5">
+    <!-- Page Header -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-white mb-1">
+            Visual <span class="text-gradient">Analytics Engine</span>
+        </h2>
+        <p class="small mx-auto" style="max-width: 600px; color: var(--text-sub);">
+            Generate dynamic statistical charts, multidimensional correlations, and distribution plots from your dataset.
+        </p>
+    </div>
 
-    <h2 class="fw-bold text-primary text-center mb-4">Data Visualization</h2>
+    <!-- Chart Configuration Form -->
+    <div class="glass-card mb-4">
+        <h5 class="fw-bold text-white mb-3">
+            <i class="bi bi-sliders text-info me-2"></i>Select Dimensions & Chart Type
+        </h5>
 
-    <div class="card shadow p-4 mb-4" style="border-radius: 12px;">
-        <h5 class="fw-semibold text-primary mb-3">Select Columns & Chart Type</h5>
+        <form method="POST" class="row g-4">
 
-        <form method="POST" class="row g-3">
-
+            <!-- X-Axis Column -->
             <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold">X-Axis Column</label>
+                <label class="form-label small text-secondary fw-semibold">X-Axis Dimension</label>
                 <select class="form-select" name="x_col" required>
-                    <option value="">Choose...</option>
+                    <option value="">Choose X dimension...</option>
                     {% for col in columns %}
                     <option value="{{ col }}">{{ col }}</option>
                     {% endfor %}
                 </select>
             </div>
 
+            <!-- Y-Axis Column -->
             <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold">Y-Axis Column</label>
+                <label class="form-label small text-secondary fw-semibold">Y-Axis Dimension (Optional for Histograms)</label>
                 <select class="form-select" name="y_col">
-                    <option value="">Choose...</option>
+                    <option value="">Choose Y dimension...</option>
                     {% for col in columns %}
                     <option value="{{ col }}">{{ col }}</option>
                     {% endfor %}
                 </select>
             </div>
 
-            <div class="col-12"> <label class="form-label fw-semibold">Chart Type</label>
+            <!-- Chart Type -->
+            <div class="col-12">
+                <label class="form-label small text-secondary fw-semibold">Plot Type</label>
                 <select class="form-select" name="plot_type" required>
                     <option value="scatter">Scatter Plot</option>
                     <option value="line">Line Chart</option>
                     <option value="bar">Bar Chart</option>
-                    <option value="histogram">Histogram</option>
-                    <option value="heatmap">Heatmap</option>
+                    <option value="histogram">Histogram / Density</option>
+                    <option value="heatmap">Heatmap Correlation</option>
                 </select>
             </div>
 
+            <!-- Submit Button -->
             <div class="col-12 mt-2">
-                <button class="btn btn-primary w-100 fw-semibold">Generate Plot</button>
+                <button type="submit" class="btn btn-glow-primary w-100 py-2 fw-semibold">
+                    <i class="bi bi-bar-chart-line me-1"></i> Generate Plot
+                </button>
             </div>
 
         </form>
     </div>
 
-    <div class="row">
+    <!-- Visualization Output & Data Preview -->
+    <div class="row g-4">
 
-        <div class="col-12 col-lg-8 mb-4">
-            <div class="card shadow p-3" style="border-radius: 12px;">
-
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="fw-semibold text-primary mb-3">Visualization Output</h5>
+        <!-- Visualization Output Card -->
+        <div class="col-12 col-lg-8">
+            <div class="glass-card h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-white mb-0">
+                            <i class="bi bi-graph-up text-info me-2"></i>Visualization Output
+                        </h5>
+                        {% if plot_html %}
+                        <span class="badge" style="background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan);">Plotly Canvas</span>
+                        {% endif %}
                     </div>
 
-                {% if plot_html %}
-                <div class="chart-container text-center">
-                    {{ plot_html | safe }}
+                    {% if plot_html %}
+                    <div class="chart-container text-center">
+                        {{ plot_html | safe }}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5" style="color: var(--text-sub);">
+                        <i class="bi bi-pie-chart fs-1 d-block mb-2 text-secondary"></i>
+                        Select your axis columns and click "Generate Plot" to render the visualization.
+                    </div>
+                    {% endif %}
                 </div>
-                {% else %}
-                <p class="text-muted mb-0">No chart generated yet.</p>
-                {% endif %}
 
                 {% if plot_html %}
-                <div class="d-flex justify-content-center mt-3"></div>
-                    <a href="{{ url_for('visualize_print') }}"
-                       class="btn btn-primary fw-semibold px-4 py-2"
-                       style="border-radius: 8px;">
-                        📄 Print PDF
+                <div class="d-flex justify-content-end mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                    <a href="{{ url_for('visualize_print') }}" class="btn btn-glow-outline">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Export Visual PDF
                     </a>
                 </div>
                 {% endif %}
             </div>
         </div>
 
-        <div class="col-12 col-lg-4 mb-4">
-            <div class="card shadow p-3" style="border-radius: 12px;">
-                <h5 class="fw-semibold text-primary mb-3">Data Preview</h5>
-
-                <div class="table-responsive">
-                    {{ preview_html | safe }}
+        <!-- Data Preview Card -->
+        <div class="col-12 col-lg-4">
+            <div class="glass-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-white mb-0">
+                        <i class="bi bi-table text-info me-2"></i>Data Preview
+                    </h5>
+                    <span class="badge" style="background: rgba(59, 130, 246, 0.1); color: var(--accent-blue);">Sample</span>
                 </div>
 
+                <div class="table-responsive styled-table-container">
+                    {% if preview_html %}
+                        {{ preview_html | safe }}
+                    {% else %}
+                        <div class="text-center py-5" style="color: var(--text-sub);">
+                            <p class="small mb-0">No data loaded.</p>
+                        </div>
+                    {% endif %}
                 </div>
+            </div>
         </div>
 
     </div>
@@ -93,18 +132,57 @@
 </div>
 
 <style>
-.chart-container iframe {
-    width: 100% !important;
-    max-width: 100%;
-    height: 350px !important;
-}
-
-/* Mobile View */
-@media (max-width: 768px) {
-    .chart-container iframe {
-        height: 260px !important;
+    /* Responsive Chart Container */
+    .chart-container {
+        border-radius: 12px;
+        overflow: hidden;
+        background: rgba(5, 11, 20, 0.4);
+        border: 1px solid rgba(56, 189, 248, 0.08);
+        padding: 4px;
     }
-}
-</style>
 
+    .chart-container iframe {
+        width: 100% !important;
+        max-width: 100%;
+        height: 380px !important;
+        border: none;
+    }
+
+    /* Dark Table Styling for Pandas Preview */
+    .styled-table-container table {
+        width: 100% !important;
+        background-color: transparent !important;
+        color: #e2e8f0 !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        font-size: 0.85rem;
+    }
+
+    .styled-table-container th {
+        background-color: rgba(6, 182, 212, 0.08) !important;
+        color: var(--accent-cyan) !important;
+        font-weight: 600 !important;
+        border-bottom: 1px solid var(--border-subtle) !important;
+        padding: 10px 12px !important;
+        white-space: nowrap;
+    }
+
+    .styled-table-container td {
+        background-color: transparent !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
+        padding: 8px 12px !important;
+        color: #cbd5e1 !important;
+        white-space: nowrap;
+    }
+
+    .styled-table-container tr:hover td {
+        background-color: rgba(56, 189, 248, 0.05) !important;
+    }
+
+    @media (max-width: 768px) {
+        .chart-container iframe {
+            height: 270px !important;
+        }
+    }
+</style>
 {% endblock %}

@@ -62,16 +62,20 @@
 <!-- Terms Modal -->
 <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content glass-card" style="background: #0d1629; border: 1px solid var(--border-subtle); color: var(--text-main);">
-      <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title fw-bold text-white" id="termsModalLabel"><i class="bi bi-shield-check text-info me-2"></i>Terms of Service</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-content" style="background: #0d1629; border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 16px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);">
+      <div class="modal-header border-0 pb-2">
+        <h5 class="modal-title fw-bold text-white d-flex align-items-center" id="termsModalLabel">
+          <i class="bi bi-shield-check me-2" style="color: #06b6d4;"></i> Terms of Service
+        </h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body small" style="color: var(--text-sub);">
-        By accessing DataSci, you agree to comply with our usage policies. All processed datasets and machine learning routines remain isolated to your session.
+      <div class="modal-body py-2" style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">
+        By creating an account on DataSci, you agree to comply with our platform terms. All uploaded datasets and predictive models remain isolated and private to your account.
       </div>
-      <div class="modal-footer border-0 pt-0">
-        <button type="button" class="btn btn-sm btn-glow-outline" data-bs-dismiss="modal">Close</button>
+      <div class="modal-footer border-0 pt-3">
+        <button type="button" class="btn btn-sm px-4 py-2 fw-semibold" data-bs-dismiss="modal" style="background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 8px;">
+          Close
+        </button>
       </div>
     </div>
   </div>
@@ -80,16 +84,20 @@
 <!-- Privacy Modal -->
 <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content glass-card" style="background: #0d1629; border: 1px solid var(--border-subtle); color: var(--text-main);">
-      <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title fw-bold text-white" id="privacyModalLabel"><i class="bi bi-lock text-info me-2"></i>Privacy Policy</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-content" style="background: #0d1629; border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 16px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);">
+      <div class="modal-header border-0 pb-2">
+        <h5 class="modal-title fw-bold text-white d-flex align-items-center" id="privacyModalLabel">
+          <i class="bi bi-lock me-2" style="color: #06b6d4;"></i> Privacy Policy
+        </h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body small" style="color: var(--text-sub);">
-        We respect your privacy. Uploaded files and inferred prediction parameters are not shared with third-party providers or used for public training.
+      <div class="modal-body py-2" style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6;">
+        We prioritize data protection. Your uploaded files, training parameters, and credentials are encrypted and never shared with external third-party advertisers.
       </div>
-      <div class="modal-footer border-0 pt-0">
-        <button type="button" class="btn btn-sm btn-glow-outline" data-bs-dismiss="modal">Close</button>
+      <div class="modal-footer border-0 pt-3">
+        <button type="button" class="btn btn-sm px-4 py-2 fw-semibold" data-bs-dismiss="modal" style="background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 8px;">
+          Close
+        </button>
       </div>
     </div>
   </div>
